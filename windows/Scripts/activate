@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="D:\Documents\learner\windows"
+VIRTUAL_ENV="C:\Users\USER\source\vscode\python\learner\windows"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
