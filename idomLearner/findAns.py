@@ -72,9 +72,7 @@ def getDefinition_concised(val:str) -> str:
         return 'none'
     res = requests.get('https://dict.concised.moe.edu.tw/'+parms[0])
     soup = BeautifulSoup(res.text,'html.parser')
-    if delEnter(val) in soup.head.title.getText():
-        return '<'+getIncludedWord(soup.head.title.getText(),'<','>')+'>'+ readDefinitionFromFrom_con(soup)
-    return 'none'
+    return '<'+getIncludedWord(soup.head.title.getText(),'<','>')+'>'+ readDefinitionFromFrom_con(soup)
 
 def getDefinition_revised(val:str) -> str:
     time.sleep(TIME_LIMIT_EACH_REQUEST)
@@ -83,9 +81,7 @@ def getDefinition_revised(val:str) -> str:
         return 'none'
     res = requests.get('https://dict.revised.moe.edu.tw/'+parms[0])
     soup = BeautifulSoup(res.text,'html.parser')
-    if delEnter(val) in soup.head.title.getText():
-        return '<'+getIncludedWord(soup.head.title.getText(),'[',' :')+'>'+readDefinitionFromFrom(soup)
-    return 'none'
+    return '<'+getIncludedWord(soup.head.title.getText(),'[',' :')+'>'+readDefinitionFromFrom(soup)
 
 def getDefinition_both(val:str) -> str:
     ret = getDefinition_idi(delEnter(val))
@@ -126,9 +122,7 @@ def getDefinition_idi(val:str)->str:
         return 'none'
     res = requests.get('https://dict.idioms.moe.edu.tw/'+params[0])
     soup = BeautifulSoup(res.text,'html.parser')
-    if delEnter(val) in soup.head.title.getText():
-        return '<'+soup.head.title.getText()[0:soup.head.title.getText().find(' [')]+'>'+ delEnter(readDefinitionFromForm_idi(soup))
-    return 'none'
+    return '<'+soup.head.title.getText()[0:soup.head.title.getText().find(' [')]+'>'+ delEnter(readDefinitionFromForm_idi(soup))
 
 if __name__ == '__main__':
     print(getDefinition_both('唯唯諾諾'))

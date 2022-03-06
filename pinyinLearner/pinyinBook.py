@@ -4,5 +4,6 @@ from pinyinLearner.findAns import getPinyin_concised
 
 
 class PinyinBook(Book):
-    def getAnsFromInternet(self,que, mode='preset'):
+    @staticmethod
+    def getAnsFromInternet(que, mode='preset'):
         return getPinyin_concised(que)

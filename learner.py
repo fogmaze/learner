@@ -1,3 +1,4 @@
+from re import I
 from core import Book,completePathFormat,delEnter
 from idomLearner.IdiomBook import IdiomBook
 from otherLearner.otherBook import OtherBook
@@ -42,20 +43,37 @@ def tester(book:Book,note:Book):
         book.release()
 
 def adder(objs:list):
-    print('enter a word or "q" for quit')
+    print('enter a word or "q" for quit,"-e <engine>" to change engine')
     inp = input()
+    findAnsMethod = objs[0].getAnsFromInternet
     while True:
         if inp == 'q':
             [obj.releaseIfNeed() for obj in objs]
             break
-        definition = objs[0].getAnsFromInternet(inp)
+        if "-e" in inp and ' ' in inp:
+            en = inp.split(' ')[1]
+            if en == 'idiom':
+                findAnsMethod = IdiomBook.getAnsFromInternet
+            elif en == 'pin' or en == 'pinyin':
+                findAnsMethod = PinyinBook.getAnsFromInternet
+            elif en == 'self':
+                findAnsMethod = OtherBook.getAnsFromInternet
+            else:
+                print('undefined:' + en)
+            inp = input()
+        definition = findAnsMethod(inp)
         rets = [obj.add(delEnter(inp),ans = definition) for obj in objs]
         [print(r) for r in rets]
-        print('enter a word or "q" for quit,"d" to delete this[%s], "e" to edit definition, "eq" to edit question' %(inp))
+        print('enter a word or "q" for quit,"d" to delete this[%s], "e" to edit definition, "eq" to edit question,"-e <engine>" to change engine' %(inp))
+
+        if objs[0].getAnsFromInternet != findAnsMethod:
+            findAnsMethod = objs[0].getAnsFromInternet
+            print('set engine to defaut')
+
         inp = input()
         if inp == 'd':
             [obj.delWord(len(obj.items)-1)for obj in objs]
-            print('enter a word or "q" for quit')
+            print('enter a word or "q" for quit,"-e <engine>" to change engine')
             inp = input()
         if inp == 'e':
             print('enter new definition')
@@ -63,7 +81,7 @@ def adder(objs:list):
             for obj in objs:
                 obj.items[len(obj.items)-1][1] = inp
             print('changed')
-            print('enter a word or "q" for quit')
+            print('enter a word or "q" for quit,"-e <engine>" to change engine')
             inp = input()
         if inp == 'eq':
             print('enter new question')
@@ -71,13 +89,16 @@ def adder(objs:list):
             for obj in objs:
                 obj.items[len(obj.items)-1][0] = inp
             print('changed')
-            print('enter a word or "q" for quit')
+            print('enter a word or "q" for quit,"-e <engine>" to change engine')
             inp = input()
         
 
 
 
 if __name__ == '__main__':
+    if len(sys.argv) == 1:
+        print('enter command:')
+        sys.argv = input().split(' ')
     previous_arg = ''
     mode = 'none'
     Args = {}
@@ -102,10 +123,10 @@ if __name__ == '__main__':
             if previous_arg == '-n':
                 Args['note'] = Book(arg)
         elif mode == 'add':
-            if arg == '-idiom':
+            if arg == 'idiom':
                 Args['bookClass'] = IdiomBook
                 print('serch mode set to "idiom"')
-            elif arg == '-pinyin' or arg == '-pin':
+            elif arg == 'pinyin' or arg == 'pin':
                 Args['bookClass'] = PinyinBook
                 print('serch mode set to "pinyin"')
             if previous_arg == '-b':
@@ -136,7 +157,7 @@ if __name__ == '__main__':
         
     if mode == 'add':
         if not 'books' in Args:
-            Args['books'] = list(Args['bookClass']('All'))
+            Args['books'] = [Args['bookClass']('All')]
             print('preset:add to All')
         adder(Args['books'])
         

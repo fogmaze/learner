@@ -38,6 +38,7 @@ class Book:
         #self.weighted -= extraWeight / self.weighted.shape[0]
         self.weighted = [w-(extraWeight/len(self.weighted)) for w in self.weighted]
 
+    @staticmethod
     def getAnsFromInternet(que,mode = 'preset'):
         raise Err('not defined')
 
