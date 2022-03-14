@@ -4,7 +4,24 @@ from idomLearner.IdiomBook import IdiomBook
 from otherLearner.otherBook import OtherBook
 from pinyinLearner.pinyinBook import PinyinBook
 import sys
+from argparse import ArgumentParser
 
+def splitBlank(str:str)->list:
+    res = []
+    inMark = False
+    lastBlank = 0
+    for i in range(len(str)):
+        if str[i] == ' ' and not inMark:
+            res.append(str[lastBlank:i].replace('"',''))
+            lastBlank = i + 1
+        elif str[i] == '"':
+            if inMark:
+                inMark = False
+            else:
+                inMark = True
+        if i+1 == len(str):
+            res.append(str[lastBlank:i+1].replace('"',''))
+    return res
 
 def tester(book:Book,note:Book):
     try:
@@ -97,9 +114,14 @@ def adder(objs:list):
 
 if __name__ == '__main__':
  
+    ArgParse = ArgumentParser()
+
     if len(sys.argv) == 1:
         print('enter command:')
-        sys.argv = input().split(' ')
+        sys.argv = splitBlank(input())
+
+
+
     previous_arg = ''
     mode = 'none'
     Args = {}
