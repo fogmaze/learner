@@ -57,6 +57,8 @@ def tester(book:Book,note:Book):
                 print('enter command ( else->quiz, q->quit)')
                 inp = input()
     finally:
+        if note:
+            note.releaseIfNeed()
         book.release()
 
 def adder(objs:list):
@@ -112,87 +114,55 @@ def adder(objs:list):
 
 
 
+
+def command(cmd:list):
+
+    ArgParser = ArgumentParser()
+    ArgParser.add_argument('mode',choices=['add','test','merge'])
+    mode,unknown = ArgParser.parse_known_args(cmd)
+    print(mode.mode)
+    if mode.mode == 'add':
+        ArgParser = ArgumentParser()
+        ArgParser.add_argument('-b','-book',dest='b',nargs='+')
+        ArgParser.add_argument('-e','-engine',dest='e')
+        args,unknown = ArgParser.parse_known_args(cmd)
+        
+        bookEngine = OtherBook
+        if args.e == 'idiom':
+            bookEngine = IdiomBook
+        elif args.e == 'pin' or args.e == 'pinyin':
+            bookEngine = PinyinBook
+
+        books = []
+        for bookName in args.b:
+            books.append(bookEngine(bookName))
+        adder(books)
+
+    if mode.mode == 'test':
+        ArgParser = ArgumentParser()
+        ArgParser.add_argument('-b','-book',dest='b')
+        ArgParser.add_argument('-n','--note',dest='n')
+        ArgParser.add_argument('-e','-engine',dest='e')
+        args,unknown = ArgParser.parse_known_args(cmd)
+
+        book = Book(args.b)
+        note = False
+        if args.n:
+            note = Book(args.n)
+        tester(book,note)    
+
+
 if __name__ == '__main__':
+    
+    print(IdiomBook.getAnsFromInternet('不見經傳'))
  
-    ArgParse = ArgumentParser()
-
-    if len(sys.argv) == 1:
+    argv = list(sys.argv)
+    print(sys.argv)
+    del argv[0]
+    if len(argv) == 0:
         print('enter command:')
-        sys.argv = splitBlank(input())
+        argv = splitBlank(input())
+
+    command(argv)
 
 
-
-    previous_arg = ''
-    mode = 'none'
-    Args = {}
-    for arg in sys.argv:
-        if arg == '--add':
-            mode = 'add'
-            Args['bookClass'] = OtherBook
-            previous_arg = arg
-            continue
-        elif arg == '--test':
-            mode = 'test'
-            previous_arg = arg
-            continue
-        elif arg == '--merge':
-            mode = 'merge'
-            previous_arg = arg
-            continue
-
-        if mode == 'test':
-            if previous_arg == '-b':
-                Args['book'] = Book(arg)
-            if previous_arg == '-n':
-                Args['note'] = Book(arg)
-        elif mode == 'add':
-            if arg == 'idiom':
-                Args['bookClass'] = IdiomBook
-                print('serch mode set to "idiom"')
-            elif arg == 'pinyin' or arg == 'pin':
-                Args['bookClass'] = PinyinBook
-                print('serch mode set to "pinyin"')
-            if previous_arg == '-b':
-                if not 'books' in Args:
-                    Args['books'] = []
-                Args['books'].append(Args['bookClass'](arg))
-                print('add to: '+arg)
-        elif mode == 'merge':
-            if previous_arg == '-o':
-                Args['object'] = Book(arg)
-            if previous_arg == '-f':
-                Args['inFile'] = open(arg,'r',encoding='utf-8')
-                Args['inAns'] = None
-            if previous_arg == '-b':
-                Args['inFile'] = open(completePathFormat(arg)+'que.txt','r',encoding='utf-8')
-                Args['inAns'] = open(completePathFormat(arg)+'ans.txt','r',encoding='utf-8')
-        previous_arg = arg
-
-    if mode == 'test':
-        if not 'book' in Args:
-            Args['book'] = Book('All_idioms')
-        if not 'note' in Args:
-            Args['note'] = False
-        tester(Args['book'],Args['note'])
-        Args['book'].releaseIfNeed()
-        if Args['note']:
-            Args['note'].releaseIfNeed()
-        
-    if mode == 'add':
-        if not 'books' in Args:
-            Args['books'] = [Args['bookClass']('All')]
-            print('preset:add to All')
-        adder(Args['books'])
-        
-
-    if mode == 'merge':
-        if not 'object' in Args or not 'inFile' in Args:
-            print('error file input')
-        else:
-            for que in Args['inFile']:
-                Args['object'].add(que,ans=Args['inAns'].readline())
-            print('merged')
-            Args['object'].releaseIfNeed()
-    
-
-    

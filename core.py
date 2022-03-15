@@ -85,7 +85,7 @@ class Book:
             fl_weighted.close()
 
     def getUnfamiliarLength(self) -> int:
-        return sumList([w for w in self.weighted if w > 1])
+        return len([w for w in self.weighted if w > 1])
 
     def getRandWord(self):
         w_len = sumList(self.weighted)
