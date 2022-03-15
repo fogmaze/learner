@@ -130,8 +130,12 @@ def command(cmd:list):
         bookEngine = OtherBook
         if args.e == 'idiom':
             bookEngine = IdiomBook
+            print('using engine : idiom')
         elif args.e == 'pin' or args.e == 'pinyin':
             bookEngine = PinyinBook
+            print('using engine : pinyin')
+        else:
+            print('using engine : defaut')
 
         books = []
         for bookName in args.b:
