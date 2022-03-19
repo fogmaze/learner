@@ -179,21 +179,6 @@ if __name__ == '__main__':
         print('enter command:')
         argv = splitBlank(input())
 
-    #command(argv)
-    buf = None
-    with open('All_idioms/ans.txt','r') as fi:
-        buf = fi.read()
-    if buf:
-        ins = False
-        nbuf = ''
-        for c in buf:
-            if c == '<':
-                ins = True
-            if not ins:
-                nbuf += c
-            if c == '>':
-                ins = False
-        with open('All_idioms/ans.txt','w') as fo:
-            fo.write(nbuf)
+    command(argv)
 
 
