@@ -42,11 +42,11 @@ def tester(book:Book,note:Book,inverse = False):
             if inverse :
                 buf = str(test_ans)
                 test_ans = str(test_que)
-                test_que = str(buf)
+                test_que = str(buf).replace(test_ans,'XXXX')
             print(test_que)
             input()
             print(test_ans)
-            print('enter command ( else->quiz, q->quit, a-> add to note, d -> delete this[%s], e -> edit definition) (%d unfamiliar left)' %(test_que,book.getUnfamiliarLength()))
+            print('enter command ( else->quiz, q->quit, a-> add to note, d -> delete this[%s], e -> edit definition) (%d unfamiliar left)' %(book.items[index][0],book.getUnfamiliarLength()))
             inp = input()
             if inp == 'e':
                 print('enter new definition')
@@ -170,7 +170,6 @@ def ListOfListByRange(list:list,range:range)->list:
 
 if __name__ == '__main__':
     argv = list(sys.argv)
-    print(sys.argv)
     del argv[0]
     if len(argv) == -1:
         print('enter command:')
