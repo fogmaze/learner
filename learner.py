@@ -14,7 +14,6 @@ engines = {
     'other':OtherBook
 }
 
-
 def splitBlank(str:str)->list:
     res = []
     inMark = False
@@ -141,9 +140,7 @@ def command(cmd:list):
         for engine in engines:
             if engine == args.e:
                 bookEngine = engines[engine]
-                print(engine)
-        
-        print(type(bookEngine))
+                print('set to :' + engine)
 
         books = []
         for bookName in args.b:
