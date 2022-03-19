@@ -1,4 +1,4 @@
-from core import Book
+from source.core import Book
 from typing import Tuple
 
 class OtherBook(Book):
