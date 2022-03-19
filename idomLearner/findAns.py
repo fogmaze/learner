@@ -122,7 +122,7 @@ def getDefinition_idi(val:str)->str:
         return 'none'
     res = requests.get('https://dict.idioms.moe.edu.tw/'+params[0])
     soup = BeautifulSoup(res.text,'html.parser')
-    return '<'+soup.head.title.getText()[0:soup.head.title.getText().find(' [')]+'>'+ delEnter(readDefinitionFromForm_idi(soup))
+    return delEnter(readDefinitionFromForm_idi(soup))
 
 if __name__ == '__main__':
     print(getDefinition_both('不見經傳'))
