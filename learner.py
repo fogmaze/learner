@@ -1,8 +1,9 @@
 from typing import List
-from core import Book,completePathFormat,delEnter
-from idomLearner.IdiomBook import IdiomBook
-from otherLearner.otherBook import OtherBook
-from pinyinLearner.pinyinBook import PinyinBook
+from source.core import Book,completePathFormat,delEnter
+from source.idomLearner.IdiomBook import IdiomBook
+from source.otherLearner.otherBook import OtherBook
+from source.pinyinLearner.pinyinBook import PinyinBook
+from source.writingLearner.WritingBook import WritingBook
 import sys
 from argparse import ArgumentParser
 
@@ -11,7 +12,9 @@ engines = {
     'pin':PinyinBook,
     'pinyin':PinyinBook,
     'idiom':IdiomBook,
-    'other':OtherBook
+    'other':OtherBook,
+    'wirting':WritingBook,
+    'wri':WritingBook
 }
 
 def splitBlank(str:str)->list:
@@ -87,8 +90,9 @@ def adder(objs:List[Book]):
                 if en == flag:
                     NowEngine = engines[flag]
             inp = input()
-        
+            
         que,ans = NowEngine.askQuestionAndAnswer(inp)
+
 
         rets = [obj.add(delEnter(que),ans = delEnter(ans)) for obj in objs]
         [print(r) for r in rets]
@@ -169,9 +173,12 @@ def ListOfListByRange(list:list,range:range)->list:
     return list[range.start:range.stop:range.step]
 
 if __name__ == '__main__':
+
+    print(IdiomBook.getAnsFromInternet('sef'))
+
     argv = list(sys.argv)
     del argv[0]
-    if len(argv) == -1:
+    if len(argv) < 2:
         print('enter command:')
         argv = splitBlank(input())
 

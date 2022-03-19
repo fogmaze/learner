@@ -2,7 +2,7 @@ from typing import List
 import requests
 from bs4 import BeautifulSoup
 import time
-from core import TIME_LIMIT_EACH_REQUEST,delEnter
+from source.core import TIME_LIMIT_EACH_REQUEST,delEnter
 
 def getIncludedWord(s:str,c_start:str,c_end:str)->str:
     return s[s.find(c_start)+1:s.find(c_end)]

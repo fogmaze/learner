@@ -1,7 +1,7 @@
 import time
 from bs4 import BeautifulSoup
 import requests
-from core import TIME_LIMIT_EACH_REQUEST
+from source.core import TIME_LIMIT_EACH_REQUEST
 
 def getIncludedWord(s:str,c_start:str,c_end:str)->str:
     return s[s.find(c_start)+1:s.find(c_end)]

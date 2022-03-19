@@ -1,10 +1,41 @@
 import random
 import os
-from typing import Tuple
+from typing import Tuple,List
 
 WEIGHT_LESS_EACH = 3.0
 TIME_LIMIT_EACH_REQUEST = 0.3
 
+def splitBlank(str:str)->List[str]:
+    res = []
+    inMark = False
+    lastBlank = 0
+    for i in range(len(str)):
+        if str[i] == ' ' and not inMark:
+            res.append(str[lastBlank:i].replace('"',''))
+            lastBlank = i + 1
+        elif str[i] == '"':
+            if inMark:
+                inMark = False
+            else:
+                inMark = True
+        if i+1 == len(str):
+            res.append(str[lastBlank:i+1].replace('"',''))
+    return res
+
+
+def ListOfListByRange(list:list,range:range)->list:
+    return list[range.start:range.stop:range.step]
+
+def MarkString(str:str,range:range):
+    return str[0:range.start] + '[' + str[range.start:range.stop] + ']' + str[range.stop:len(str)]
+
+def MergeString(list,mark = ','):
+    if len(list) == 0:
+        return
+    ret = list[0]
+    for i in range(1,len(list)):
+        ret += mark + list[i]
+    return ret
 def my_rand(start,stop):
     s = random.random()
     return start + s * (stop-start)

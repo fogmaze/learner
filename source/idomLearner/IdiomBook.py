@@ -2,10 +2,8 @@ import sys
 import os
 from typing import Tuple
 
-sys.path.insert(0,os.path.dirname(__file__))
-
-from core import Book
-import findAns as dk
+from source.core import Book
+import source.idomLearner.findAns as dk
 
 class IdiomBook(Book):
     @staticmethod
