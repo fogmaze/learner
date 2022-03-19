@@ -1,5 +1,6 @@
 import random
 import os
+from typing import Tuple
 
 WEIGHT_LESS_EACH = 3.0
 TIME_LIMIT_EACH_REQUEST = 0.3
@@ -37,6 +38,12 @@ class Book:
         del self.weighted[index]
         #self.weighted -= extraWeight / self.weighted.shape[0]
         self.weighted = [w-(extraWeight/len(self.weighted)) for w in self.weighted]
+
+
+    @staticmethod
+    def askQuestionAndAnswer(inp:str)->Tuple[str,str]:
+        ans = Book.getAnsFromInternet(inp)
+        return inp,ans
 
     @staticmethod
     def getAnsFromInternet(que,mode = 'preset'):

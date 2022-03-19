@@ -1,10 +1,19 @@
-from re import I
+from typing import List
 from core import Book,completePathFormat,delEnter
 from idomLearner.IdiomBook import IdiomBook
 from otherLearner.otherBook import OtherBook
 from pinyinLearner.pinyinBook import PinyinBook
 import sys
 from argparse import ArgumentParser
+
+
+engines = {
+    'pin':PinyinBook,
+    'pinyin':PinyinBook,
+    'idiom':IdiomBook,
+    'other':OtherBook
+}
+
 
 def splitBlank(str:str)->list:
     res = []
@@ -23,7 +32,7 @@ def splitBlank(str:str)->list:
             res.append(str[lastBlank:i+1].replace('"',''))
     return res
 
-def tester(book:Book,note:Book):
+def tester(book:Book,note:Book,inverse = False):
     try:
         print('enter command ( else->quiz, q->quit)')
         inp = input()
@@ -31,6 +40,10 @@ def tester(book:Book,note:Book):
             if inp == 'q':
                 break
             test_que,test_ans,index = book.getRandWord()
+            if inverse :
+                buf = str(test_ans)
+                test_ans = str(test_que)
+                test_que = str(buf)
             print(test_que)
             input()
             print(test_ans)
@@ -61,32 +74,29 @@ def tester(book:Book,note:Book):
             note.releaseIfNeed()
         book.release()
 
-def adder(objs:list):
+def adder(objs:List[Book]):
     print('enter a word or "q" for quit,"-e <engine>" to change engine')
     inp = input()
-    findAnsMethod = objs[0].getAnsFromInternet
+    NowEngine = objs[0].__class__
     while True:
         if inp == 'q':
             [obj.releaseIfNeed() for obj in objs]
             break
         if "-e" in inp and ' ' in inp:
             en = inp.split(' ')[1]
-            if en == 'idiom':
-                findAnsMethod = IdiomBook.getAnsFromInternet
-            elif en == 'pin' or en == 'pinyin':
-                findAnsMethod = PinyinBook.getAnsFromInternet
-            elif en == 'self':
-                findAnsMethod = OtherBook.getAnsFromInternet
-            else:
-                print('undefined:' + en)
+            for flag in engines:
+                if en == flag:
+                    NowEngine = engines[flag]
             inp = input()
-        definition = findAnsMethod(inp)
-        rets = [obj.add(delEnter(inp),ans = definition) for obj in objs]
+        
+        que,ans = NowEngine.askQuestionAndAnswer(inp)
+
+        rets = [obj.add(delEnter(que),ans = delEnter(ans)) for obj in objs]
         [print(r) for r in rets]
         print('enter a word or "q" for quit,"d" to delete this[%s], "e" to edit definition, "eq" to edit question,"-e <engine>" to change engine' %(inp))
 
-        if objs[0].getAnsFromInternet != findAnsMethod:
-            findAnsMethod = objs[0].getAnsFromInternet
+        if objs[0].__class__ != NowEngine:
+            NowEngine = objs[0].__class__
             print('set engine to defaut')
 
         inp = input()
@@ -128,14 +138,12 @@ def command(cmd:list):
         args,unknown = ArgParser.parse_known_args(cmd)
         
         bookEngine = OtherBook
-        if args.e == 'idiom':
-            bookEngine = IdiomBook
-            print('using engine : idiom')
-        elif args.e == 'pin' or args.e == 'pinyin':
-            bookEngine = PinyinBook
-            print('using engine : pinyin')
-        else:
-            print('using engine : defaut')
+        for engine in engines:
+            if engine == args.e:
+                bookEngine = engines[engine]
+                print(engine)
+        
+        print(type(bookEngine))
 
         books = []
         for bookName in args.b:
@@ -144,29 +152,48 @@ def command(cmd:list):
 
     if mode.mode == 'test':
         ArgParser = ArgumentParser()
-        ArgParser.add_argument('-b','-book',dest='b')
+        ArgParser.add_argument('-b','--book',dest='b')
         ArgParser.add_argument('-n','--note',dest='n')
         ArgParser.add_argument('-e','-engine',dest='e')
+        ArgParser.add_argument('--inv',dest='inv',action="store_true")
         args,unknown = ArgParser.parse_known_args(cmd)
 
         book = Book(args.b)
         note = False
         if args.n:
             note = Book(args.n)
-        tester(book,note)    
+        if args.inv:
+            tester(book,note,inverse=True)
+        else:
+            tester(book,note)    
 
+
+def ListOfListByRange(list:list,range:range)->list:
+    return list[range.start:range.stop:range.step]
 
 if __name__ == '__main__':
-    
-    print(IdiomBook.getAnsFromInternet('不見經傳'))
- 
     argv = list(sys.argv)
     print(sys.argv)
     del argv[0]
-    if len(argv) == 0:
+    if len(argv) == -1:
         print('enter command:')
         argv = splitBlank(input())
 
-    command(argv)
+    #command(argv)
+    buf = None
+    with open('All_idioms/ans.txt','r') as fi:
+        buf = fi.read()
+    if buf:
+        ins = False
+        nbuf = ''
+        for c in buf:
+            if c == '<':
+                ins = True
+            if not ins:
+                nbuf += c
+            if c == '>':
+                ins = False
+        with open('All_idioms/ans.txt','w') as fo:
+            fo.write(nbuf)
 
 

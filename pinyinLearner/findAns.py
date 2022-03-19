@@ -1,3 +1,4 @@
+from typing import List
 import requests
 from bs4 import BeautifulSoup
 import time
@@ -26,24 +27,25 @@ def findHref_con(word:str) -> list:
         print('error:mapping lost')
     return filtered_herf
 
-def readPinyinFromForm_con(soup:BeautifulSoup) -> str:
+def readPinyinFromForm_con(soup:BeautifulSoup) -> List[str]:
     ret = ''
     i = 1
     for section in soup.find('article').find_all('section'):
         if '注　　音' in section.getText():
-            ret = delEnter(section.getText())
+            val = delEnter(section.getText()).replace('注　　音','')
+            ret = val.split('  ')
             return ret
     return 'not found'
 
-def getPinyin_concised(val:str) -> str:
+def getPinyin_concised(val:str) -> List[str]:
     time.sleep(TIME_LIMIT_EACH_REQUEST)
     parms = findHref_con(val)
     print(val)
     if len(parms) == 0:
-        return 'none0'
+        return ['none0']
     res = requests.get('https://dict.concised.moe.edu.tw/'+parms[0])
     soup = BeautifulSoup(res.text,'html.parser')
     if delEnter(val) in soup.head.title.getText():
         return readPinyinFromForm_con(soup)
-    return 'none1'
+    return ['none1']
 
