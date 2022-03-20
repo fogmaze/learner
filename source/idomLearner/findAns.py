@@ -3,6 +3,10 @@ from bs4 import BeautifulSoup
 import requests
 from source.core import TIME_LIMIT_EACH_REQUEST
 
+requests.adapters.DEFAULT_RETRIES = 5
+se = requests.session()
+se.keep_alive = False
+
 def getIncludedWord(s:str,c_start:str,c_end:str)->str:
     return s[s.find(c_start)+1:s.find(c_end)]
 
@@ -15,7 +19,7 @@ def delEnter(s:str)->str:
 
 def findHref_con(word:str) -> list:
     time.sleep(TIME_LIMIT_EACH_REQUEST)
-    res = requests.get('https://dict.concised.moe.edu.tw/search.jsp',params={"word":word})
+    res = se.get('https://dict.concised.moe.edu.tw/search.jsp',params={"word":word})
     soup = BeautifulSoup(res.text,'html.parser')
     filtered_herf = list()
     if('基本檢索' in soup.head.title.getText()):
@@ -32,7 +36,7 @@ def findHref_con(word:str) -> list:
 
 def findHref(word:str) -> list:
     time.sleep(TIME_LIMIT_EACH_REQUEST)
-    res = requests.get('https://dict.revised.moe.edu.tw/search.jsp',params={"word":word})
+    res = se.get('https://dict.revised.moe.edu.tw/search.jsp',params={"word":word})
     soup = BeautifulSoup(res.text,'html.parser')
     filtered_herf = list()
     if('基本檢索' in soup.head.title.getText()):
@@ -70,7 +74,7 @@ def getDefinition_concised(val:str) -> str:
     parms = findHref_con(val)
     if len(parms) == 0:
         return 'none'
-    res = requests.get('https://dict.concised.moe.edu.tw/'+parms[0])
+    res = se.get('https://dict.concised.moe.edu.tw/'+parms[0])
     soup = BeautifulSoup(res.text,'html.parser')
     return '<'+getIncludedWord(soup.head.title.getText(),'<','>')+'>'+ readDefinitionFromFrom_con(soup)
 
@@ -79,7 +83,7 @@ def getDefinition_revised(val:str) -> str:
     parms = findHref(val)
     if len(parms) == 0:
         return 'none'
-    res = requests.get('https://dict.revised.moe.edu.tw/'+parms[0])
+    res = se.get('https://dict.revised.moe.edu.tw/'+parms[0])
     soup = BeautifulSoup(res.text,'html.parser')
     return '<'+getIncludedWord(soup.head.title.getText(),'[',' :')+'>'+readDefinitionFromFrom(soup)
 
@@ -98,7 +102,7 @@ def getDefinition_both(val:str) -> str:
 
 def findHref_idi(word:str) -> list:
     time.sleep(TIME_LIMIT_EACH_REQUEST)
-    res = requests.get('https://dict.idioms.moe.edu.tw/idiomList.jsp',params={"idiom":word})
+    res = se.get('https://dict.idioms.moe.edu.tw/idiomList.jsp',params={"idiom":word})
     soup = BeautifulSoup(res.text,'html.parser')
     filtered_herf = list()
     if('成語檢索' in soup.head.title.getText()):
@@ -120,7 +124,7 @@ def getDefinition_idi(val:str)->str:
     params = findHref_idi(val)
     if len(params) == 0:
         return 'none'
-    res = requests.get('https://dict.idioms.moe.edu.tw/'+params[0])
+    res = se.get('https://dict.idioms.moe.edu.tw/'+params[0])
     soup = BeautifulSoup(res.text,'html.parser')
     return delEnter(readDefinitionFromForm_idi(soup))
 

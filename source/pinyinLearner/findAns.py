@@ -4,12 +4,16 @@ from bs4 import BeautifulSoup
 import time
 from source.core import TIME_LIMIT_EACH_REQUEST,delEnter
 
+requests.adapters.DEFAULT_RETRIES = 5
+se = requests.session()
+se.keep_alive = False
+
 def getIncludedWord(s:str,c_start:str,c_end:str)->str:
     return s[s.find(c_start)+1:s.find(c_end)]
 
 def findHref_con(word:str) -> list:
     time.sleep(TIME_LIMIT_EACH_REQUEST)
-    res = requests.get('https://dict.concised.moe.edu.tw/search.jsp',params={"word":word})
+    res = se.get('https://dict.concised.moe.edu.tw/search.jsp',params={"word":word})
     soup = BeautifulSoup(res.text,'html.parser')
     filtered_herf = list()
     '''
@@ -43,7 +47,7 @@ def getPinyin_concised(val:str) -> List[str]:
     print(val)
     if len(parms) == 0:
         return ['none0']
-    res = requests.get('https://dict.concised.moe.edu.tw/'+parms[0])
+    res = se.get('https://dict.concised.moe.edu.tw/'+parms[0])
     soup = BeautifulSoup(res.text,'html.parser')
     if delEnter(val) in soup.head.title.getText():
         return readPinyinFromForm_con(soup)
