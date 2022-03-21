@@ -11,10 +11,10 @@ B.C. 6TH
 B.C. 1500
 B.C. 6TH
 B.C. 3TH
-A.C. 1TH
-A.C. 7TH
-A.C. 8TH
-A.C. 1TH
+A.D. 1TH
+A.D. 7TH
+A.D. 8TH
+A.D. 1TH
 3TH
 4th 末 1.分東西羅馬 2.訂基督教為國教
 4th 初 1.基督教合法 2.君士坦丁堡
