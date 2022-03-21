@@ -5,15 +5,17 @@ from source.otherLearner.otherBook import OtherBook
 from source.pinyinLearner.pinyinBook import PinyinBook
 from source.writingLearner.WritingBook import WritingBook
 import sys
+from os import path
 from argparse import ArgumentParser
 
+BOOK_PATH_ROOT = './books/'
 
 engines = {
     'pin':PinyinBook,
     'pinyin':PinyinBook,
     'idiom':IdiomBook,
     'other':OtherBook,
-    'wirting':WritingBook,
+    'writing':WritingBook,
     'wri':WritingBook
 }
 
@@ -133,36 +135,45 @@ def command(cmd:list):
     ArgParser = ArgumentParser()
     ArgParser.add_argument('mode',choices=['add','test','merge'])
     mode,unknown = ArgParser.parse_known_args(cmd)
-    print(mode.mode)
     if mode.mode == 'add':
         ArgParser = ArgumentParser()
-        ArgParser.add_argument('-b','-book',dest='b',nargs='+')
-        ArgParser.add_argument('-e','-engine',dest='e')
+        ArgParser.add_argument('mode')
+        ArgParser.add_argument('engine')
+        ArgParser.add_argument('books',nargs='+')
         args,unknown = ArgParser.parse_known_args(cmd)
-        
+                
         bookEngine = OtherBook
         for engine in engines:
-            if engine == args.e:
+            if engine == args.engine:
                 bookEngine = engines[engine]
                 print('set to :' + engine)
 
         books = []
-        for bookName in args.b:
-            books.append(bookEngine(bookName))
+        for bookName in args.books:
+            books.append(bookEngine(path.join(BOOK_PATH_ROOT,bookName)))
         adder(books)
 
     if mode.mode == 'test':
         ArgParser = ArgumentParser()
-        ArgParser.add_argument('-b','--book',dest='b')
+        ArgParser.add_argument("mode")
+        ArgParser.add_argument('book')
         ArgParser.add_argument('-n','--note',dest='n')
-        ArgParser.add_argument('-e','-engine',dest='e')
+        ArgParser.add_argument('-H',dest='test_hard',action="store_true")
         ArgParser.add_argument('--inv',dest='inv',action="store_true")
         args,unknown = ArgParser.parse_known_args(cmd)
 
-        book = Book(args.b)
+        book = None
+        if args.test_hard:
+            book = Book(path.join(BOOK_PATH_ROOT,args.book,'hards'))
+        else:
+            book = Book(path.join(BOOK_PATH_ROOT,args.book))
+
         note = False
         if args.n:
-            note = Book(args.n)
+            note = Book(path.join(BOOK_PATH_ROOT,args.n))
+        elif not args.test_hard and path.isdir(path.join(BOOK_PATH_ROOT,args.book,'hards')):
+            note = Book(path.join(BOOK_PATH_ROOT,args.book,'hards'))
+        
         if args.inv:
             tester(book,note,inverse=True)
         else:
@@ -173,8 +184,6 @@ def ListOfListByRange(list:list,range:range)->list:
     return list[range.start:range.stop:range.step]
 
 if __name__ == '__main__':
-
-    print(IdiomBook.getAnsFromInternet('sef'))
 
     argv = list(sys.argv)
     del argv[0]
