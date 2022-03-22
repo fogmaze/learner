@@ -1,5 +1,5 @@
 from typing import List
-from source.core import Book,completePathFormat,delEnter
+from source.core import Book,completePathFormat,delEnter, mergeBooks
 from source.idomLearner.IdiomBook import IdiomBook
 from source.otherLearner.otherBook import OtherBook
 from source.pinyinLearner.pinyinBook import PinyinBook
@@ -178,6 +178,19 @@ def command(cmd:list):
             tester(book,note,inverse=True)
         else:
             tester(book,note)    
+    
+
+    if mode.mode == 'merge':
+        ArgParser.add_argument('mode')
+        ArgParser.add_argument('dst')
+        ArgParser.add_argument('books',nargs='+')
+        args = ArgParser.parse_args(cmd)
+
+        dst = Book(args.dst)
+        books = [Book(n) for n in args.books]
+
+        mergeBooks(dst,books).SAVE2RELEASE = True
+        dst.releaseIfNeed()
 
 
 def ListOfListByRange(list:list,range:range)->list:

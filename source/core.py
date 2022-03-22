@@ -105,6 +105,7 @@ class Book:
             if not os.path.isdir(root_path):
                 self.createNewBookDir(root_path)
             self.FILE_ROOT = root_path
+            self.SAVE2RELEASE = True
             fl_ques = open(self.FILE_ROOT+'que.txt','r',encoding='utf-8')
             fl_Anss = open(self.FILE_ROOT+'ans.txt','r',encoding='utf-8')
             fl_weighted = open(self.FILE_ROOT+'weighted.txt','r',encoding='utf-8')
@@ -144,6 +145,8 @@ class Book:
 
     def release(self):
         self.inited = False
+        if not self.SAVE2RELEASE:
+            return
         fl_ques = open(self.FILE_ROOT+'que.txt','w',encoding='utf-8')
         fl_Anss = open(self.FILE_ROOT+'ans.txt','w',encoding='utf-8')
         fl_weighted = open(self.FILE_ROOT+'weighted.txt','w',encoding='utf-8')
@@ -165,7 +168,6 @@ class Book:
     def releaseIfNeed(self):
         if self.inited:
             self.release()
-            self.inited = False
 
     def __del__(self):
         if self.inited:
@@ -180,4 +182,11 @@ class Book:
         with open(path+'que.txt','w'),open(path+'ans.txt','w'),open(path+'weighted.txt','w'):
             pass
     
+
+def mergeBooks(dst:Book,*books:Book)->Book:
+    for book in books:
+        dst.weighted.append(book.weighted)
+        dst.items.append(book.items)
+    dst.SAVE2RELEASE = False
+    return dst
 
