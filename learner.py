@@ -132,7 +132,7 @@ def adder(obj:Book):
 def command(cmd:list):
 
     ArgParser = ArgumentParser()
-    ArgParser.add_argument('mode',choices=['add','test','merge'])
+    ArgParser.add_argument('mode',choices=['add','test','merge','git'])
     ArgParser.add_argument('other_commands',nargs='+')
     mode,unknown = ArgParser.parse_known_args(cmd)
     if mode.mode == 'add':
@@ -200,6 +200,9 @@ def command(cmd:list):
 
         mergeBooks(dst,books).SAVE2RELEASE = True
         dst.releaseIfNeed()
+
+    if mode.mode == 'git':
+        git.command(cmd[1:len(cmd)])
 
 if __name__ == '__main__':
 

@@ -147,7 +147,7 @@ def command(argv):
             f.close()
 
     if not args.update == None:
-        repo = getRepo(config)
+        repo = getRepo()
         for mode_i in range(0,len(args.update),2):
             if args.update[mode_i] == 'dir':
                 updateDir(repo,args.update[mode_i+1],config['base_dir'])
@@ -156,7 +156,7 @@ def command(argv):
             
 
     if not args.upload == None:
-        repo = getRepo(config)
+        repo = getRepo()
         for mode_i in range(0,len(args.upload),2):
             if args.upload[mode_i] == 'dir':
                 uploadDir2Github(repo,os.path.join(config['base_dir'],args.upload[mode_i + 1]),args.upload[mode_i+1])
@@ -183,9 +183,6 @@ def command(argv):
 
 
 if __name__ == "__main__":
-    repo = getRepo()
-    print(repo.get_contents('/'))
-
     argv = str(sys.argv)
     if len(sys.argv) < 2:
         MOBIO = True
