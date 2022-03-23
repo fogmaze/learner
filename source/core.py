@@ -99,11 +99,13 @@ class Book:
         
     def __init__(self,root_path = './'):
         try:
+            self.isNew = False
             self.inited = True
             if root_path[len(root_path)-1] != '/':
                 root_path += '/'
             if not os.path.isdir(root_path):
                 self.createNewBookDir(root_path)
+                self.isNew = True
             self.FILE_ROOT = root_path
             self.SAVE2RELEASE = True
             fl_ques = open(self.FILE_ROOT+'que.txt','r',encoding='utf-8')

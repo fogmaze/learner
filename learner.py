@@ -4,6 +4,7 @@ from source.idomLearner.IdiomBook import IdiomBook
 from source.otherLearner.otherBook import OtherBook
 from source.pinyinLearner.pinyinBook import PinyinBook
 from source.writingLearner.WritingBook import WritingBook
+import git
 import sys
 from os import path
 from argparse import ArgumentParser
@@ -78,13 +79,13 @@ def tester(book:Book,note:Book,inverse = False):
             note.releaseIfNeed()
         book.release()
 
-def adder(objs:List[Book]):
+def adder(obj:Book):
     print('enter a word or "q" for quit,"-e <engine>" to change engine')
     inp = input()
-    NowEngine = objs[0].__class__
+    NowEngine = obj.__class__
     while True:
         if inp == 'q':
-            [obj.releaseIfNeed() for obj in objs]
+            obj.releaseIfNeed()
             break
         if "-e" in inp and ' ' in inp:
             en = inp.split(' ')[1]
@@ -96,32 +97,30 @@ def adder(objs:List[Book]):
         que,ans = NowEngine.askQuestionAndAnswer(inp)
 
 
-        rets = [obj.add(delEnter(que),ans = delEnter(ans)) for obj in objs]
+        rets = obj.add(delEnter(que),ans = delEnter(ans))
         [print(r) for r in rets]
         print('enter a word or "q" for quit,"d" to delete this[%s], "e" to edit definition, "eq" to edit question,"-e <engine>" to change engine' %(inp))
 
-        if objs[0].__class__ != NowEngine:
-            NowEngine = objs[0].__class__
+        if obj.__class__ != NowEngine:
+            NowEngine = obj.__class__
             print('set engine to defaut')
 
         inp = input()
         if inp == 'd':
-            [obj.delWord(len(obj.items)-1)for obj in objs]
+            obj.delWord(len(obj.items)-1)
             print('enter a word or "q" for quit,"-e <engine>" to change engine')
             inp = input()
         if inp == 'e':
             print('enter new definition')
             inp = input()
-            for obj in objs:
-                obj.items[len(obj.items)-1][1] = inp
+            obj.items[len(obj.items)-1][1] = inp
             print('changed')
             print('enter a word or "q" for quit,"-e <engine>" to change engine')
             inp = input()
         if inp == 'eq':
             print('enter new question')
             inp = input()
-            for obj in objs:
-                obj.items[len(obj.items)-1][0] = inp
+            obj.items[len(obj.items)-1][0] = inp
             print('changed')
             print('enter a word or "q" for quit,"-e <engine>" to change engine')
             inp = input()
@@ -134,12 +133,14 @@ def command(cmd:list):
 
     ArgParser = ArgumentParser()
     ArgParser.add_argument('mode',choices=['add','test','merge'])
+    ArgParser.add_argument('other_commands',nargs='+')
     mode,unknown = ArgParser.parse_known_args(cmd)
     if mode.mode == 'add':
         ArgParser = ArgumentParser()
         ArgParser.add_argument('mode')
         ArgParser.add_argument('engine')
-        ArgParser.add_argument('books',nargs='+')
+        ArgParser.add_argument('book')
+        ArgParser.add_argument('--dont-update',dest='git',action='store_false')
         args,unknown = ArgParser.parse_known_args(cmd)
                 
         bookEngine = OtherBook
@@ -148,10 +149,13 @@ def command(cmd:list):
                 bookEngine = engines[engine]
                 print('set to :' + engine)
 
-        books = []
-        for bookName in args.books:
-            books.append(bookEngine(path.join(BOOK_PATH_ROOT,bookName)))
-        adder(books)
+        book = bookEngine(path.join(BOOK_PATH_ROOT,args.book))
+        adder(book)
+
+        if args.git:
+            repo = git.getRepo()
+            git.uploadDir2Github(repo,book.FILE_ROOT,book.isNew)
+            print('uploaded')
 
     if mode.mode == 'test':
         ArgParser = ArgumentParser()
@@ -160,13 +164,18 @@ def command(cmd:list):
         ArgParser.add_argument('-n','--note',dest='n')
         ArgParser.add_argument('-H',dest='test_hard',action="store_true")
         ArgParser.add_argument('--inv',dest='inv',action="store_true")
+        ArgParser.add_argument('--dont-download',dest='git',action='store_false')
         args,unknown = ArgParser.parse_known_args(cmd)
 
+        bookPath = path.join(BOOK_PATH_ROOT,args.book)
+        if args.git:
+            git.updateDir(git.getRepo(),bookPath,GO_INSIDE_DIR=False)
+            print('downloaded')
         book = None
         if args.test_hard:
             book = Book(path.join(BOOK_PATH_ROOT,args.book,'hards'))
         else:
-            book = Book(path.join(BOOK_PATH_ROOT,args.book))
+            book = Book(bookPath)
 
         note = False
         if args.n:
@@ -191,10 +200,6 @@ def command(cmd:list):
 
         mergeBooks(dst,books).SAVE2RELEASE = True
         dst.releaseIfNeed()
-
-
-def ListOfListByRange(list:list,range:range)->list:
-    return list[range.start:range.stop:range.step]
 
 if __name__ == '__main__':
 
