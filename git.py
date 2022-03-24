@@ -80,11 +80,7 @@ def uploadDir2Github(repo:Repository,dirName):
         local_fileName =files.pop(0)
         if os.path.isdir(local_fileName):
             [files.append(path.join(local_fileName,f)) for f in os.listdir(local_fileName)]
-            print('is dir:' + local_fileName)
             continue
-        else:
-            print('is file:' + local_fileName)
-        print('uploading :'+local_fileName)
         uploadFile2Github(repo,local_fileName,local_fileName)
 
 
@@ -134,38 +130,23 @@ def command(argv):
     Arg.add_argument('-ul','--upload',dest="upload",nargs='+')
     args = Arg.parse_args(argv)
 
-    config = json.loads('{}')
-    if os.path.isfile('gitkey.json'):
-        try:
-            f = open('gitkey.json','r',encoding='utf-8')
-            config = json.load(f)
-        finally:
-            f.close()
-
     if not args.update == None:
         repo = getRepo()
-        for mode_i in range(0,len(args.update),2):
-            if args.update[mode_i] == 'dir':
-                updateDir(repo,args.update[mode_i+1],config['base_dir'])
-            if args.update[mode_i] == 'file' or args.update[mode_i] == 'f':
-                updateFile(repo,args.update[mode_i+1],config['base_dir'])
-            
+        for item in args.update:
+            if path.isdir(item):
+                updateDir(repo,item)
+            elif path.isfile(item):
+                updateFile(repo,item)
+            else:
+                print('not a file or dir:' + item)
 
     if not args.upload == None:
         repo = getRepo()
         for item in args.upload:
             if path.isdir(item):
-                try:
-                    uploadDir2Github(repo,item)
-                except:
-                    uploadDir2Github(repo,item)
-                print('uploaded a dir:' + item)
+                uploadDir2Github(repo,item)
             elif path.isfile(item):
-                try:
-                    uploadFile2Github(repo,path.join(config['base_dir'],item),item)
-                except:
-                    uploadFile2Github(repo,path.join(config['base_dir'],item),item)
-                print('upload a file:' + item)
+                uploadFile2Github(repo,path.join(config['base_dir'],item),item)
             else:
                 print('not a file or dir:' + item)
 
