@@ -132,7 +132,7 @@ def adder(obj:Book):
 def command(cmd:list):
 
     ArgParser = ArgumentParser()
-    ArgParser.add_argument('mode',choices=['add','test','merge','git'])
+    ArgParser.add_argument('mode',choices=['add','test','merge','git','upgrade'])
     ArgParser.add_argument('other_commands',nargs='+')
     mode,unknown = ArgParser.parse_known_args(cmd)
     if mode.mode == 'add':
@@ -203,6 +203,22 @@ def command(cmd:list):
 
     if mode.mode == 'git':
         git.command(cmd[1:len(cmd)])
+    
+    if mode.mode == 'upgrade':
+        repo = git.getRepo()
+        DONT_UPGRADE_DIR = [
+            'windows',
+            'ubuntu',
+            '.git',
+            '.gitignore'
+        ]
+        base_contents = [c for c in repo.get_contents('/') if not c in DONT_UPGRADE_DIR]
+        for content in base_contents:
+            item = content.path
+            if path.isdir(item):
+                git.updateDir(repo,item)
+            elif path.isfile(item):
+                git.updateFile(repo,item)
 
 if __name__ == '__main__':
 
