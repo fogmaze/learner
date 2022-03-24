@@ -1,6 +1,8 @@
 import json
 import os
 import sys
+from tkinter import E
+from turtle import up
 from github import Github
 from github.Repository import Repository
 from github.ContentFile import ContentFile
@@ -12,7 +14,7 @@ from os import path
 MOBIO = True
 
 config = False
-with open('gitkey.json','r') as config_f:
+with open('gitkey.json','r',encoding='utf-8') as config_f:
     config = json.load(config_f)
 
 if not config:
@@ -51,7 +53,11 @@ def openAndCreatePath(name,mode,encoding = 'defaut'):
         return open(name,mode,encoding = encoding)
 
 def getAllFileInDirGithub(repo:Repository,dirName:str)->List[ContentFile]:
-    cnts = repo.get_contents(dirName)
+    cnts = []
+    try:
+        cnts = repo.get_contents(dirName)
+    except:
+        print("it's new")
     ret = []
     while True:
         if len(cnts) == 0:
@@ -65,46 +71,36 @@ def getAllFileInDirGithub(repo:Repository,dirName:str)->List[ContentFile]:
 
     
 
-def uploadDir2Github(repo:Repository,dirName,PATH_IN_GITHUB_EXIST = True):
+def uploadDir2Github(repo:Repository,dirName):
     #dirName = format_dir(dirName)
-    old_contents = []
-    if PATH_IN_GITHUB_EXIST:
-        old_contents = getAllFileInDirGithub(repo,dirName)
-    old_fileName_in_repo_dict = {}
-    for i in range(len(old_contents)):
-        old_fileName_in_repo_dict[old_contents[i].path] = i
     files = [path.join(dirName,f) for f in os.listdir(dirName)]
-    print(files)
     while True:
         if len(files) == 0:
             break
         local_fileName =files.pop(0)
         if os.path.isdir(local_fileName):
             [files.append(path.join(local_fileName,f)) for f in os.listdir(local_fileName)]
-            print('isdir:' + local_fileName)
+            print('is dir:' + local_fileName)
             continue
-        
-        with open(local_fileName,'r') as local_file:
-            if local_fileName in old_fileName_in_repo_dict:
-                old_content = old_contents[old_fileName_in_repo_dict[local_fileName]]
-                repo.update_file(path=old_content.path,message='upload',content=local_file.read(),sha=old_content.sha)
-                print('update: '+old_content.name)
-            else:
-                repo.create_file(path=local_fileName,message='create',content=local_file.read())
-                print('created')
+        else:
+            print('is file:' + local_fileName)
+        print('uploading :'+local_fileName)
+        uploadFile2Github(repo,local_fileName,local_fileName)
 
 
-def uploadFile2Github(repo,filename,path_repo,FILE_IN_GITHUB_EXIST = True):
-    if FILE_IN_GITHUB_EXIST:
+def uploadFile2Github(repo:Repository,filename:str,path_repo:str):
+    path_repo = path_repo.replace('\\','/')
+    old_content = False
+    try:
         old_content = repo.get_contents(path_repo)
-        with open(filename,'r') as fileLocal:
+    except:
+        print('new file in github:' + path_repo)
+    if old_content:
+        with open(filename,'r',encoding='utf-8') as fileLocal:
             repo.update_file(path=old_content.path,message="upload",content=fileLocal.read(),sha=old_content.sha)
-            print('upload: ' + old_content.name)
     else:
-            repo.create_file(path=old_content.path,message="upload",content=fileLocal.read())
-        
-                        
-    
+        with open(filename,'r',encoding='utf-8') as fileLocal:
+            repo.create_file(path=path_repo,message="upload",content=fileLocal.read())
 
 def getRepo()->Repository:
     return Github(login_or_token=config['github_token']).get_repo(config['repo_name'])
@@ -141,7 +137,7 @@ def command(argv):
     config = json.loads('{}')
     if os.path.isfile('gitkey.json'):
         try:
-            f = open('gitkey.json','r')
+            f = open('gitkey.json','r',encoding='utf-8')
             config = json.load(f)
         finally:
             f.close()
@@ -157,28 +153,33 @@ def command(argv):
 
     if not args.upload == None:
         repo = getRepo()
-        for mode_i in range(0,len(args.upload),2):
-            if args.upload[mode_i] == 'dir':
-                uploadDir2Github(repo,os.path.join(config['base_dir'],args.upload[mode_i + 1]),args.upload[mode_i+1])
-            if args.upload[mode_i] == 'ndir':
-                uploadDir2Github(repo,os.path.join(config['base_dir'],args.upload[mode_i + 1]),args.upload[mode_i+1],PATH_IN_GITHUB_EXIST=False)
-            if args.upload[mode_i] == 'file' or args.upload[mode_i] == 'f':
-                uploadFile2Github(repo,args.upload[mode_i+1],args.upload[mode_i+1])
-            if args.upload[mode_i] == 'nfile' or args.upload[mode_i] == 'nf':
-                uploadFile2Github(repo,args.upload[mode_i+1],args.upload[mode_i+1],FILE_IN_GITHUB_EXIST=False)
-
+        for item in args.upload:
+            if path.isdir(item):
+                try:
+                    uploadDir2Github(repo,item)
+                except:
+                    uploadDir2Github(repo,item)
+                print('uploaded a dir:' + item)
+            elif path.isfile(item):
+                try:
+                    uploadFile2Github(repo,path.join(config['base_dir'],item),item)
+                except:
+                    uploadFile2Github(repo,path.join(config['base_dir'],item),item)
+                print('upload a file:' + item)
+            else:
+                print('not a file or dir:' + item)
 
     if not args.set_up == None:
         config = json.loads('{}')
         if os.path.isfile('gitkey.json'):
             try:
-                old_configFile = open('gitkey.json','r')
+                old_configFile = open('gitkey.json','r',encoding='utf-8')
                 config = json.load(old_configFile)
             finally:
                 old_configFile.close()
         for opt_i in range(0,len(args.set_up),2):
             config[args.set_up[opt_i]] = args.set_up[opt_i+1]
-        with open('gitkey.json','w') as f:
+        with open('gitkey.json','w',encoding='utf-8') as f:
             json.dump(config,f)
 
 
