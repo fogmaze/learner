@@ -13,13 +13,12 @@ from os import path
 
 MOBIO = True
 
-config = False
-with open('gitkey.json','r',encoding='utf-8') as config_f:
-    config = json.load(config_f)
+def init():
+    with open('gitkey.json','r',encoding='utf-8') as config_f:
+        global config
+        config = json.load(config_f)
 
-if not config:
-    print('config file not found')
-
+init()
 
 def splitBlank(str:str)->list:
     res = []
@@ -64,7 +63,8 @@ def getAllFileInDirGithub(repo:Repository,dirName:str)->List[ContentFile]:
             break
         content = cnts.pop(0)
         if content.type == 'dir':
-            [cnts.append(c) for c in repo.get_contents(content.path)]
+            if not content.name in config['ignore_dir']:
+                [cnts.append(c) for c in repo.get_contents(content.path)]
         else:
             ret.append(content)
     return ret

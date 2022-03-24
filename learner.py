@@ -97,8 +97,8 @@ def adder(obj:Book):
         que,ans = NowEngine.askQuestionAndAnswer(inp)
 
 
-        rets = obj.add(delEnter(que),ans = delEnter(ans))
-        [print(r) for r in rets]
+        ret = obj.add(delEnter(que),ans = delEnter(ans))
+        print(ret)
         print('enter a word or "q" for quit,"d" to delete this[%s], "e" to edit definition, "eq" to edit question,"-e <engine>" to change engine' %(inp))
 
         if obj.__class__ != NowEngine:
@@ -133,7 +133,6 @@ def command(cmd:list):
 
     ArgParser = ArgumentParser()
     ArgParser.add_argument('mode',choices=['add','test','merge','git','upgrade'])
-    ArgParser.add_argument('other_commands',nargs='+')
     mode,unknown = ArgParser.parse_known_args(cmd)
     if mode.mode == 'add':
         ArgParser = ArgumentParser()
@@ -154,8 +153,11 @@ def command(cmd:list):
 
         if args.git:
             repo = git.getRepo()
-            git.uploadDir2Github(repo,book.FILE_ROOT,book.isNew)
+            git.uploadDir2Github(repo,book.FILE_ROOT)
             print('uploaded')
+    
+    git.init()
+    print(git.config)
 
     if mode.mode == 'test':
         ArgParser = ArgumentParser()
@@ -221,6 +223,10 @@ def command(cmd:list):
                 git.updateFile(repo,item)
 
 if __name__ == '__main__':
+
+    
+    git.init()
+    print(git.config)
 
     argv = list(sys.argv)
     del argv[0]
