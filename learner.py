@@ -224,10 +224,6 @@ def command(cmd:list):
 
 if __name__ == '__main__':
 
-    
-    git.init()
-    print(git.config)
-
     argv = list(sys.argv)
     del argv[0]
     if len(argv) < 2:
