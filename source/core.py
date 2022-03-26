@@ -187,8 +187,8 @@ class Book:
 
 def mergeBooks(dst:Book,*books:Book)->Book:
     for book in books:
-        dst.weighted.append(book.weighted)
-        dst.items.append(book.items)
+        [dst.weighted.append(w) for w in book[0].weighted]
+        [dst.items.append(item) for item in book[0].items]
     dst.SAVE2RELEASE = False
     return dst
 

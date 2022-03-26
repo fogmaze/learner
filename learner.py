@@ -139,8 +139,6 @@ def command(cmd:list):
 
 
     if mode.mode == 'add':
-        ArgParser = ArgumentParser()
-        ArgParser.add_argument('mode')
         ArgParser.add_argument('engine')
         ArgParser.add_argument('book')
         ArgParser.add_argument('--dont-update',dest='git',action='store_false')
@@ -161,8 +159,6 @@ def command(cmd:list):
             print('uploaded')
     
     if mode.mode == 'test':
-        ArgParser = ArgumentParser()
-        ArgParser.add_argument("mode")
         ArgParser.add_argument('book')
         ArgParser.add_argument('-n','--note',dest='n')
         ArgParser.add_argument('-H',dest='test_hard',action="store_true")
@@ -193,13 +189,12 @@ def command(cmd:list):
     
 
     if mode.mode == 'merge':
-        ArgParser.add_argument('mode')
         ArgParser.add_argument('dst')
         ArgParser.add_argument('books',nargs='+')
         args = ArgParser.parse_args(cmd)
 
-        dst = Book(args.dst)
-        books = [Book(n) for n in args.books]
+        dst = Book(path.join(BOOK_PATH_ROOT,args.dst))
+        books = [Book(path.join(BOOK_PATH_ROOT,n)) for n in args.books]
 
         mergeBooks(dst,books).SAVE2RELEASE = True
         dst.releaseIfNeed()
