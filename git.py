@@ -107,6 +107,8 @@ def saveContent(content,dst_base_dir = './'):
         f.write(base64.b64decode(content.content).decode('utf8'))
     
 def updateDir(repo:Repository,path_repo:str,GO_INSIDE_DIR = True):
+    if path.basename(path_repo) in config['ignore_dir']:
+        return
     if not GO_INSIDE_DIR:
         contents = repo.get_contents(path_repo)
         for content in contents:
