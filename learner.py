@@ -61,12 +61,15 @@ def tester(book:Book,note:Book,inverse = False):
                 print('changed')
                 print('enter command ( else->quiz, q->quit)' %(test_que))
                 inp = input()
-            if inp == 'a' and note:
-                if note.add(test_que,ans=test_ans):
-                    print('added')
+            if inp == 'a':
+                if note:
+                    if note.add(test_que,ans=test_ans):
+                        print('added')
+                    else:
+                        print('already added')
+                    print('enter command ( else->quiz, q->quit)')
                 else:
-                    print('already added')
-                print('enter command ( else->quiz, q->quit)')
+                    print('notebook not loaded')
                 inp = input()
             elif inp == 'd':
                 book.delWord(index)
@@ -179,7 +182,7 @@ def command(cmd:list):
         note = False
         if args.n:
             note = Book(path.join(BOOK_PATH_ROOT,args.n))
-        elif not args.test_hard and path.isdir(path.join(BOOK_PATH_ROOT,args.book,'hards')):
+        elif not args.test_hard:
             note = Book(path.join(BOOK_PATH_ROOT,args.book,'hards'))
         
         if args.inv:

@@ -2,7 +2,7 @@ import random
 import os
 from typing import Tuple,List
 
-WEIGHT_LESS_EACH = 3.0
+WEIGHT_LESS_EACH = 4.0
 TIME_LIMIT_EACH_REQUEST = 0.3
 
 def splitBlank(str:str)->List[str]:
