@@ -185,10 +185,10 @@ class Book:
             pass
     
 
-def mergeBooks(dst:Book,*books:Book)->Book:
+def mergeBooks(dst:Book,books:List[Book])->Book:
     for book in books:
-        [dst.weighted.append(w) for w in book[0].weighted]
-        [dst.items.append(item) for item in book[0].items]
+        [dst.weighted.append(w) for w in book.weighted]
+        [dst.items.append(item) for item in book.items]
     dst.SAVE2RELEASE = False
     return dst
 
