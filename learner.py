@@ -131,9 +131,13 @@ def adder(obj:Book):
 
 def command(cmd:list):
 
+    git.init()
+
     ArgParser = ArgumentParser()
     ArgParser.add_argument('mode',choices=['add','test','merge','git','upgrade'])
     mode,unknown = ArgParser.parse_known_args(cmd)
+
+
     if mode.mode == 'add':
         ArgParser = ArgumentParser()
         ArgParser.add_argument('mode')
@@ -156,9 +160,6 @@ def command(cmd:list):
             git.uploadDir2Github(repo,book.FILE_ROOT)
             print('uploaded')
     
-    git.init()
-    print(git.config)
-
     if mode.mode == 'test':
         ArgParser = ArgumentParser()
         ArgParser.add_argument("mode")
