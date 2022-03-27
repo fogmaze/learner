@@ -73,6 +73,8 @@ def getAllFileInDirGithub(repo:Repository,dirName:str)->List[ContentFile]:
 
 def uploadDir2Github(repo:Repository,dirName):
     #dirName = format_dir(dirName)
+    if path.basename(dirName) in config:
+        return
     files = [path.join(dirName,f) for f in os.listdir(dirName)]
     while True:
         if len(files) == 0:
