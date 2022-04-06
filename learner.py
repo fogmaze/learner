@@ -1,4 +1,5 @@
 import base64
+import os
 from typing import List
 from source.core import Book,completePathFormat,delEnter, mergeBooks
 from source.idomLearner.IdiomBook import IdiomBook
@@ -138,7 +139,7 @@ def command(cmd:list):
     git.init()
 
     ArgParser = ArgumentParser()
-    ArgParser.add_argument('mode',choices=['add','test','merge','git','upgrade'])
+    ArgParser.add_argument('mode',choices=['add','test','merge','git','upgrade','upload'])
     mode,unknown = ArgParser.parse_known_args(cmd)
 
 
@@ -224,11 +225,24 @@ def command(cmd:list):
                 git.updateDir(repo,item)
             elif path.isfile(item):
                 git.updateFile(repo,item)
+    if mode.mode == 'upload':
+        return
+        repo = git.getRepo()
+        DONT_UPLOAD_DIR = [
+            'windows',
+            'ubuntu',
+            '.git',
+            '.gitignore'
+        ]
+        base_files = os.listdir(git.config['base_dir'])
+        for fileName in base_files:
+            if path.isdir(fileName):
+                git.uploadDir2Github(repo,fileName)
+            if path.isfile(fileName):
+                git.uploadFile2Github(repo,fileName,fileName)
+
 
 if __name__ == '__main__':
-
-    'hello'
-    print('hello')
 
     argv = list(sys.argv)
     del argv[0]
