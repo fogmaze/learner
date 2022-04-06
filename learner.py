@@ -189,6 +189,9 @@ def command(cmd:list):
             tester(book,note,inverse=True)
         else:
             tester(book,note)    
+        
+        if args.git:
+            git.uploadDir2Github(git.getRepo(),bookPath)
     
 
     if mode.mode == 'merge':
