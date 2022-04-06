@@ -14,9 +14,19 @@ from os import path
 MOBIO = True
 
 def init():
+    flags = [
+        'github_token',
+        'repo_name',
+        'base_dir',
+        'ignore_files',
+        'ignore_dir'
+    ]
     with open('gitkey.json','r',encoding='utf-8') as config_f:
         global config
         config = json.load(config_f)
+    for flag in flags:
+        if not flag in config:
+            config[flag] = '' 
 
 init()
 
@@ -103,10 +113,16 @@ def uploadFile2Github(repo:Repository,filename:str,path_repo:str):
 def getRepo()->Repository:
     return Github(login_or_token=config['github_token']).get_repo(config['repo_name'])
 
-def saveContent(content,dst_base_dir = './'):
+def saveContent(content:ContentFile,dst_base_dir = './'):
     dst_base_dir = format_dir(dst_base_dir)
+    if content.name in config['ignore_files']:
+        return
     with openAndCreatePath(dst_base_dir+content.path,'w',encoding='utf-8') as f:
-        f.write(base64.b64decode(content.content).decode('utf8'))
+        try:
+            f.write(base64.b64decode(content.content).decode('utf8'))
+        except:
+            print('cannot decode by utf-8')
+            f.write(base64.b64decode(content.content))
     
 def updateDir(repo:Repository,path_repo:str,GO_INSIDE_DIR = True):
     if path.basename(path_repo) in config['ignore_dir']:

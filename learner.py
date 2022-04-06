@@ -1,3 +1,4 @@
+import base64
 from typing import List
 from source.core import Book,completePathFormat,delEnter, mergeBooks
 from source.idomLearner.IdiomBook import IdiomBook
