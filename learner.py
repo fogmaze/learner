@@ -219,6 +219,7 @@ def command(cmd:list):
             '.gitignore'
         ]
         base_contents = [c for c in repo.get_contents('/') if not c in DONT_UPGRADE_DIR]
+        print([n.name for n in base_contents])
         for content in base_contents:
             item = content.path
             if path.isdir(item):

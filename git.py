@@ -53,8 +53,8 @@ def format_dir(str)->str:
     return str
 
 def openAndCreatePath(name,mode,encoding = 'defaut'):
-    print(os.path.dirname(name))
     if not os.path.isdir(os.path.dirname(name)):
+        print(os.path.dirname(name))
         os.makedirs(os.path.dirname(name))
     if encoding == 'defaut':
         return open(name,mode)
