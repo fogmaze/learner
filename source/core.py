@@ -2,7 +2,6 @@ import random
 import os
 from typing import Tuple,List
 
-WEIGHT_LESS_EACH = 4.0
 TIME_LIMIT_EACH_REQUEST = 0.3
 
 def splitBlank(str:str)->List[str]:
@@ -52,7 +51,7 @@ def completePathFormat(s:str)->str:
         s+= '/'
     return s
 
-def sumList(list:list)->float:
+def sumList(list:List[float])->float:
     sum = 0
     for item in list:
         sum += item
@@ -63,7 +62,8 @@ class Err(Exception):pass
 
 class Book:
     def delWord(self,index:int):
-        extraWeight = WEIGHT_LESS_EACH - self.weighted[index]
+        w_less_each = len(self.items)
+        extraWeight = w_less_each - self.weighted[index]
         del self.items[index]
         #self.weighted = np.delete(self.weighted,index)
         del self.weighted[index]
@@ -110,39 +110,56 @@ class Book:
             self.SAVE2RELEASE = True
             fl_ques = open(self.FILE_ROOT+'que.txt','r',encoding='utf-8')
             fl_Anss = open(self.FILE_ROOT+'ans.txt','r',encoding='utf-8')
-            fl_weighted = open(self.FILE_ROOT+'weighted.txt','r',encoding='utf-8')
-            #li_w = list() 
+            fl_weighted = None
+            try:
+                fl_weighted = open(self.FILE_ROOT+'weighted.txt','r',encoding='utf-8')
+            except:
+                pass
             self.items = list()
             self.weighted = list()
             for que in fl_ques:
                 ans = fl_Anss.readline()
                 self.items.append([delEnter(que),delEnter(ans)])
-                #li_w.append(float(fl_weighted.readline()))
-                self.weighted.append(float(fl_weighted.readline()))
-            #self.weighted = np.array(li_w)
+
+                if fl_weighted:                
+                    self.weighted.append(float(fl_weighted.readline()))
+                else:
+                    self.weighted.append(1.0)
+            ''
         finally:
             fl_ques.close()
             fl_Anss.close()
-            fl_weighted.close()
+            if fl_weighted:
+                fl_weighted.close()
 
     def getUnfamiliarLength(self) -> int:
         return len([w for w in self.weighted if w > 1])
 
     def getRandWord(self):
-        w_len = sumList(self.weighted)
-        seak = my_rand(0,w_len)
+        w_len = len(self.weighted)
+        w_sum = sumList([w for w in self.weighted if w > 0])
+        seak = my_rand(0,w_sum)
         which = 0
         i = 0
         num = 0
         while(True):
+            if i == len(self.weighted):
+                break
+            if self.weighted[i] < 0:
+                i += 1
+                continue
             if seak-num < self.weighted[i]:
                 which = i
                 break
             num += self.weighted[i]
             i += 1
-        self.weighted[which] = self.weighted[which] - WEIGHT_LESS_EACH
-        #self.weighted += WEIGHT_LESS_EACH/float(w_len) 
-        self.weighted = [(w + WEIGHT_LESS_EACH/float(w_len)) for w in self.weighted]
+
+        print(sumList(self.weighted))
+        w_less_each = len(self.items)
+        self.weighted[which] = self.weighted[which] - w_less_each
+        self.weighted = [(w + w_less_each/float(w_len)) for w in self.weighted]
+
+        print(sumList(self.weighted))
         return self.items[which][0],self.items[which][1],which
 
     def release(self):
@@ -151,10 +168,7 @@ class Book:
             return
         fl_ques = open(self.FILE_ROOT+'que.txt','w',encoding='utf-8')
         fl_Anss = open(self.FILE_ROOT+'ans.txt','w',encoding='utf-8')
-        fl_weighted = open(self.FILE_ROOT+'weighted.txt','w',encoding='utf-8')
 
-        for w in self.weighted:
-            fl_weighted.write(str(w) + '\n')
         for each in self.items:
             if each[0][len(each[0])-1] != '\n':
                 each[0] += '\n'
@@ -163,9 +177,14 @@ class Book:
             fl_ques.write(each[0])
             fl_Anss.write(each[1])
         
-        fl_weighted.close()
         fl_ques.close()
         fl_Anss.close()
+
+        if os.path.isfile(self.FILE_ROOT+'weighted.txt'):
+            fl_weighted = open(self.FILE_ROOT+'weighted.txt','w',encoding='utf-8')
+            for w in self.weighted:
+                fl_weighted.write(str(w) + '\n')
+            fl_weighted.close()
 
     def releaseIfNeed(self):
         if self.inited:
