@@ -114,39 +114,46 @@ class Book:
     def __init__(self,root_path,mode = 'default'):
         self.file_mode = mode
         self.inited = True
-        if root_path[len(root_path)-1] != '/':
-            root_path += '/'
-        if not os.path.isfile(root_path + 'book.json'):
-            print('no file name :' + root_path)
-            print('press "y" to create, or other to quit')
-            confirm = input()
-            if not confirm == 'y':
-                sys.exit()
-                return
-            self.createNewBookDir(root_path)
-            self.isNew = True
         self.FILE_ROOT = root_path
         self.SAVE2RELEASE = True
+        if root_path[len(root_path)-1] != '/':
+            root_path += '/'
         
         if mode == 'json':
+            if not os.path.isfile(root_path + 'book.json'):
+                print('no file name :' + root_path)
+                print('press "y" to create, or other to quit')
+                confirm = input()
+                if not confirm == 'y':
+                    sys.exit()
+                    return
+                self.createNewBookDir(root_path)
+                self.isNew = True
             self.file_mode = 'json'
 
             js_f = open(self.FILE_ROOT+'book.json','r',encoding='utf-8')
             dc = json.load(js_f)
             self.items = [ [data[0],data[1]] for data in dc['data'] ]
             self.weighted = [ data[2] for data in dc['data'] ]
-            
-                
             return
             
         try:
-            fl_ques = open(self.FILE_ROOT+'que.txt','r',encoding='utf-8')
-            fl_Anss = open(self.FILE_ROOT+'ans.txt','r',encoding='utf-8')
+            if not os.path.isfile(root_path + 'que.txt'):
+                print('no file name :' + root_path)
+                print('press "y" to create, or other to quit')
+                confirm = input()
+                if not confirm == 'y':
+                    sys.exit()
+                self.createNewBookDir(root_path)
+                self.isNew = True
+            
+            fl_ques = open(os.path.join(self.FILE_ROOT,'que.txt'),'r',encoding='utf-8')
+            fl_Anss = open(os.path.join(self.FILE_ROOT,'ans.txt'),'r',encoding='utf-8')
             fl_weighted = None
             try:
                 fl_weighted = open(self.FILE_ROOT+'weighted.txt','r',encoding='utf-8')
             except:
-                pass
+                print('cannot open weighted')
             self.items = list()
             self.weighted = list()
             for que in fl_ques:
@@ -157,12 +164,17 @@ class Book:
                     self.weighted.append(float(fl_weighted.readline()))
                 else:
                     self.weighted.append(1.0)
-            ''
+        except:
+            print('error')
+            print('cannot open book')
+            self = None
+            return
         finally:
             fl_ques.close()
             fl_Anss.close()
             if fl_weighted:
                 fl_weighted.close()
+        
 
     def getUnfamiliarLength(self) -> int:
         return len([w for w in self.weighted if w > 1])
@@ -185,13 +197,9 @@ class Book:
                 break
             num += self.weighted[i]
             i += 1
-
-        print(sumList(self.weighted))
         w_less_each = len(self.items)
         self.weighted[which] = self.weighted[which] - w_less_each
         self.weighted = [(w + w_less_each/float(w_len)) for w in self.weighted]
-
-        print(sumList(self.weighted))
         return self.items[which][0],self.items[which][1],which
 
     def release(self):
@@ -209,8 +217,8 @@ class Book:
             return
             
 
-        fl_ques = open(self.FILE_ROOT+'que.txt','w',encoding='utf-8')
-        fl_Anss = open(self.FILE_ROOT+'ans.txt','w',encoding='utf-8')
+        fl_ques = open(os.path.join(self.FILE_ROOT,'que.txt'),'w',encoding='utf-8')
+        fl_Anss = open(os.path.join(self.FILE_ROOT,'ans.txt'),'w',encoding='utf-8')
 
         for each in self.items:
             if each[0][len(each[0])-1] != '\n':
@@ -291,4 +299,9 @@ def convertFile(name:str):
     
 
 if __name__ == "__main__":
-    pass
+    try:
+        f = open('./books/chinese/ans.txt','r',encoding='utf-8')
+    except:
+        print('err')
+    finally:
+        f.close()
