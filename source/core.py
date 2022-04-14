@@ -161,7 +161,7 @@ class Book:
             fl_Anss = myopen(os.path.join(self.FILE_ROOT,'ans.txt'),'r',encoding='utf-8')
             fl_weighted = None
             try:
-                fl_weighted = myopen(self.FILE_ROOT+'weighted.txt','r',encoding='utf-8')
+                fl_weighted = myopen(os.path.join(self.FILE_ROOT,'weighted.txt'),'r',encoding='utf-8')
             except:
                 print('cannot open weighted')
             self.items = list()
