@@ -1,3 +1,5 @@
+import base64
+import os
 from typing import List
 from source.core import Book,completePathFormat,delEnter, mergeBooks
 from source.idomLearner.IdiomBook import IdiomBook
@@ -137,7 +139,7 @@ def command(cmd:list):
     git.init()
 
     ArgParser = ArgumentParser()
-    ArgParser.add_argument('mode',choices=['add','test','merge','git','upgrade'])
+    ArgParser.add_argument('mode',choices=['add','test','merge','git','upgrade','upload'])
     mode,unknown = ArgParser.parse_known_args(cmd)
 
 
@@ -189,6 +191,9 @@ def command(cmd:list):
             tester(book,note,inverse=True)
         else:
             tester(book,note)    
+        
+        if args.git:
+            git.uploadDir2Github(git.getRepo(),bookPath)
     
 
     if mode.mode == 'merge':
@@ -214,12 +219,29 @@ def command(cmd:list):
             '.gitignore'
         ]
         base_contents = [c for c in repo.get_contents('/') if not c in DONT_UPGRADE_DIR]
+        print([n.name for n in base_contents])
         for content in base_contents:
             item = content.path
             if path.isdir(item):
                 git.updateDir(repo,item)
             elif path.isfile(item):
                 git.updateFile(repo,item)
+    if mode.mode == 'upload':
+        return
+        repo = git.getRepo()
+        DONT_UPLOAD_DIR = [
+            'windows',
+            'ubuntu',
+            '.git',
+            '.gitignore'
+        ]
+        base_files = os.listdir(git.config['base_dir'])
+        for fileName in base_files:
+            if path.isdir(fileName):
+                git.uploadDir2Github(repo,fileName)
+            if path.isfile(fileName):
+                git.uploadFile2Github(repo,fileName,fileName)
+
 
 if __name__ == '__main__':
 
