@@ -111,7 +111,7 @@ class Book:
         self.items = []
         self.weighted = []
         
-    def __init__(self,root_path,mode = 'json'):
+    def __init__(self,root_path,mode = 'default'):
         self.file_mode = mode
         self.inited = True
         if root_path[len(root_path)-1] != '/':
@@ -206,6 +206,7 @@ class Book:
                 data_dc['data'].append([self.items[i][0],self.items[i][1],self.weighted[i]])
             with open(os.path.join(self.FILE_ROOT,'book.json'),'w',encoding='utf-8') as f:
                 f.write(json.dumps(data_dc,ensure_ascii=False,indent=4))
+            return
             
 
         fl_ques = open(self.FILE_ROOT+'que.txt','w',encoding='utf-8')
