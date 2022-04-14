@@ -1,4 +1,5 @@
 import json
+import platform
 import random
 import os
 import sys
@@ -7,6 +8,15 @@ from typing import Tuple,List
 TIME_LIMIT_EACH_REQUEST = 0.3
 
 BOOK_BASE = './books/'
+
+def WindowsOpen(name:str,mode,encoding='utf-8'):
+    print('win open:'+name.replace('/','\\'))
+    return open(name.replace('/','\\'),mode,encoding=encoding)
+
+if platform.system() == 'Windows':
+    myopen = WindowsOpen
+else:
+    myopen = open
 
 def splitBlank(str:str)->List[str]:
     res = []
@@ -131,7 +141,7 @@ class Book:
                 self.isNew = True
             self.file_mode = 'json'
 
-            js_f = open(self.FILE_ROOT+'book.json','r',encoding='utf-8')
+            js_f = myopen(self.FILE_ROOT+'book.json','r',encoding='utf-8')
             dc = json.load(js_f)
             self.items = [ [data[0],data[1]] for data in dc['data'] ]
             self.weighted = [ data[2] for data in dc['data'] ]
@@ -147,11 +157,11 @@ class Book:
                 self.createNewBookDir(root_path)
                 self.isNew = True
             
-            fl_ques = open(os.path.join(self.FILE_ROOT,'que.txt'),'r',encoding='utf-8')
-            fl_Anss = open(os.path.join(self.FILE_ROOT,'ans.txt'),'r',encoding='utf-8')
+            fl_ques = myopen(os.path.join(self.FILE_ROOT,'que.txt'),'r',encoding='utf-8')
+            fl_Anss = myopen(os.path.join(self.FILE_ROOT,'ans.txt'),'r',encoding='utf-8')
             fl_weighted = None
             try:
-                fl_weighted = open(self.FILE_ROOT+'weighted.txt','r',encoding='utf-8')
+                fl_weighted = myopen(self.FILE_ROOT+'weighted.txt','r',encoding='utf-8')
             except:
                 print('cannot open weighted')
             self.items = list()
@@ -212,13 +222,13 @@ class Book:
             data_dc['data'] = []
             for i in range(len(self.items)):
                 data_dc['data'].append([self.items[i][0],self.items[i][1],self.weighted[i]])
-            with open(os.path.join(self.FILE_ROOT,'book.json'),'w',encoding='utf-8') as f:
+            with myopen(os.path.join(self.FILE_ROOT,'book.json'),'w',encoding='utf-8') as f:
                 f.write(json.dumps(data_dc,ensure_ascii=False,indent=4))
             return
             
 
-        fl_ques = open(os.path.join(self.FILE_ROOT,'que.txt'),'w',encoding='utf-8')
-        fl_Anss = open(os.path.join(self.FILE_ROOT,'ans.txt'),'w',encoding='utf-8')
+        fl_ques = myopen(os.path.join(self.FILE_ROOT,'que.txt'),'w',encoding='utf-8')
+        fl_Anss = myopen(os.path.join(self.FILE_ROOT,'ans.txt'),'w',encoding='utf-8')
 
         for each in self.items:
             if each[0][len(each[0])-1] != '\n':
@@ -232,7 +242,7 @@ class Book:
         fl_Anss.close()
 
         if os.path.isfile(self.FILE_ROOT+'weighted.txt'):
-            fl_weighted = open(self.FILE_ROOT+'weighted.txt','w',encoding='utf-8')
+            fl_weighted = myopen(self.FILE_ROOT+'weighted.txt','w',encoding='utf-8')
             for w in self.weighted:
                 fl_weighted.write(str(w) + '\n')
             fl_weighted.close()
@@ -252,14 +262,14 @@ class Book:
                 path+= '/'
             if not os.path.isdir(path):
                 os.mkdir(path)
-            with open(path+'book.json','w',encoding='utf-8') as f:
+            with myopen(path+'book.json','w',encoding='utf-8') as f:
                 json.dump({'data':[]},f)
             return
         if path[len(path)-1] != '/':
             path+= '/'
         if not os.path.isdir(path):
             os.mkdir(path)
-        with open(path+'que.txt','w'),open(path+'ans.txt','w'),open(path+'weighted.txt','w'):
+        with myopen(path+'que.txt','w'),myopen(path+'ans.txt','w'),myopen(path+'weighted.txt','w'):
             pass
     
 
@@ -293,15 +303,10 @@ def convertFile(name:str):
     data_dc['data'] = []
     for i in range(len(book_old.items)):
         data_dc['data'].append([book_old.items[i][0],book_old.items[i][1],book_old.weighted[i]])
-    with open(os.path.join(name,'book.json'),'w',encoding='utf-8') as f:
+    with myopen(os.path.join(name,'book.json'),'w',encoding='utf-8') as f:
         f.write(json.dumps(data_dc,ensure_ascii=False,indent=4))
     
     
 
 if __name__ == "__main__":
-    try:
-        f = open('./books/chinese/ans.txt','r',encoding='utf-8')
-    except:
-        print('err')
-    finally:
-        f.close()
+    print(platform.system())
