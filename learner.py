@@ -253,5 +253,5 @@ def main():
     command(argv)
 
 if __name__ == '__main__':
-    print(PinyinBook.askQuestionAndAnswer('朝三暮四 0101'))
+    main()
     
