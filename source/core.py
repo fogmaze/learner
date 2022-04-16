@@ -247,7 +247,7 @@ class Book:
         fl_Anss.close()
 
         if self.saveWeightFile:
-            fl_weighted = myopen(self.FILE_ROOT+'weighted.txt','w',encoding='utf-8')
+            fl_weighted = myopen(os.path.join(self.FILE_ROOT,'weighted.txt'),'w',encoding='utf-8')
             for w in self.weighted:
                 fl_weighted.write(str(w) + '\n')
             fl_weighted.close()
