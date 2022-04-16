@@ -1,4 +1,4 @@
-from source.pinyinLearner.pinyinBook import PinyinBook
+from source.pinyinLearner.pinyinBook import PinyinBook,findRanges
 from source.core import *
 from typing import Tuple,List
 
@@ -15,9 +15,11 @@ class WritingBook(Book):
         if len(val) < 2:
             return
         que_orig = val[0]
-        testingRange = range(int(val[1]),int(val[1])+1)
-        if len(val) == 3:
-            testingRange = range(int(val[1]),int(val[2])+1)
+
+        
+        testingRange = range(0,len(que_orig))
+        if len(inp) == 2:
+            testingRange = findRanges([True if d == '1' else False for d in val[1]])[0]
 
         all_pinyin = PinyinBook.getAnsFromInternet(que_orig)
         if all_pinyin[0] == 'none0':

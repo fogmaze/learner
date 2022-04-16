@@ -40,6 +40,25 @@ def ListOfListByRange(list:list,range:range)->list:
 def MarkString(str:str,range:range):
     return str[0:range.start] + '[' + str[range.start:range.stop] + ']' + str[range.stop:len(str)]
 
+def MarksString(str:str,ranges:List[range]):
+    marked = [False for c in str]
+    marked.append(False)
+    nstr = str + ' '
+    for r in ranges:
+        for i in r:
+            marked[i] = True
+    res = ''
+    Marking = False
+    for ind,c in enumerate(nstr):
+        if marked[ind] and not Marking:
+            Marking = True
+            res += '['
+        if not marked[ind] and Marking:
+            Marking = False
+            res += ']'
+        res += c
+    return res 
+
 def MergeString(list,mark = ','):
     if len(list) == 0:
         return

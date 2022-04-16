@@ -1,11 +1,12 @@
 import base64
 import os
 from typing import List
-from source.core import Book,completePathFormat,delEnter, mergeBooks
+from source.core import Book, MarksString,completePathFormat,delEnter, mergeBooks
 from source.idomLearner.IdiomBook import IdiomBook
 from source.otherLearner.otherBook import OtherBook
 from source.pinyinLearner.pinyinBook import PinyinBook
 from source.writingLearner.WritingBook import WritingBook
+import source.pinyinLearner.pinyinBook as p
 import git
 import sys
 from os import path
@@ -242,9 +243,7 @@ def command(cmd:list):
             if path.isfile(fileName):
                 git.uploadFile2Github(repo,fileName,fileName)
 
-
-if __name__ == '__main__':
-
+def main():
     argv = list(sys.argv)
     del argv[0]
     if len(argv) < 2:
@@ -253,4 +252,6 @@ if __name__ == '__main__':
 
     command(argv)
 
-
+if __name__ == '__main__':
+    print(PinyinBook.askQuestionAndAnswer('朝三暮四 0101'))
+    
