@@ -9,13 +9,8 @@ TIME_LIMIT_EACH_REQUEST = 0.3
 
 BOOK_BASE = './books/'
 
-def WindowsOpen(name:str,mode,encoding='utf-8'):
-    print('win open:'+name.replace('/','\\'))
-    return open(name.replace('/','\\'),mode,encoding=encoding)
-
 if platform.system() == 'Windows':
     def myopen(name:str,mode,encoding='utf-8'):
-        print('win open:'+name.replace('/','\\'))
         return open(name.replace('/','\\'),mode,encoding=encoding)
 else:
     def myopen(name:str,mode,encoding='utf-8'):
