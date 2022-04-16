@@ -60,7 +60,7 @@ def tester(book:Book,note:Book,inverse = False):
                 inp = input()
                 book.items[index][1] = inp
                 print('changed')
-                print('enter command ( else->quiz, q->quit)' %(test_que))
+                print('enter command ( else->quiz, q->quit)')
                 inp = input()
             if inp == 'a':
                 if note:
