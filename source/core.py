@@ -14,9 +14,12 @@ def WindowsOpen(name:str,mode,encoding='utf-8'):
     return open(name.replace('/','\\'),mode,encoding=encoding)
 
 if platform.system() == 'Windows':
-    myopen = WindowsOpen
+    def myopen(name:str,mode,encoding='utf-8'):
+        print('win open:'+name.replace('/','\\'))
+        return open(name.replace('/','\\'),mode,encoding=encoding)
 else:
-    myopen = open
+    def myopen(name:str,mode,encoding='utf-8'):
+        return open(name,mode,encoding=encoding)
 
 def splitBlank(str:str)->List[str]:
     res = []
