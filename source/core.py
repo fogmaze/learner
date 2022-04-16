@@ -124,11 +124,12 @@ class Book:
         self.items = []
         self.weighted = []
         
-    def __init__(self,root_path,mode = 'default'):
+    def __init__(self,root_path,weighted_file = True,mode = 'default'):
         self.file_mode = mode
         self.inited = True
         self.FILE_ROOT = root_path
         self.SAVE2RELEASE = True
+        self.saveWeightFile = weighted_file
         if root_path[len(root_path)-1] != '/':
             root_path += '/'
         
@@ -163,17 +164,18 @@ class Book:
             fl_ques = myopen(os.path.join(self.FILE_ROOT,'que.txt'),'r',encoding='utf-8')
             fl_Anss = myopen(os.path.join(self.FILE_ROOT,'ans.txt'),'r',encoding='utf-8')
             fl_weighted = None
-            try:
-                fl_weighted = myopen(os.path.join(self.FILE_ROOT,'weighted.txt'),'r',encoding='utf-8')
-            except:
-                print('cannot open weighted')
+            if weighted_file:
+                try:
+                    fl_weighted = myopen(os.path.join(self.FILE_ROOT,'weighted.txt'),'r',encoding='utf-8')
+                except:
+                    print('cannot open weighted')
             self.items = list()
             self.weighted = list()
             for que in fl_ques:
                 ans = fl_Anss.readline()
                 self.items.append([delEnter(que),delEnter(ans)])
 
-                if fl_weighted:                
+                if fl_weighted:
                     self.weighted.append(float(fl_weighted.readline()))
                 else:
                     self.weighted.append(1.0)
@@ -244,7 +246,7 @@ class Book:
         fl_ques.close()
         fl_Anss.close()
 
-        if os.path.isfile(self.FILE_ROOT+'weighted.txt'):
+        if self.saveWeightFile:
             fl_weighted = myopen(self.FILE_ROOT+'weighted.txt','w',encoding='utf-8')
             for w in self.weighted:
                 fl_weighted.write(str(w) + '\n')
@@ -312,4 +314,4 @@ def convertFile(name:str):
     
 
 if __name__ == "__main__":
-    print(platform.system())
+    pass
