@@ -183,7 +183,7 @@ def command(cmd:list):
 
             bookPath = path.join(BOOK_PATH_ROOT,args.book)
             if args.git:
-                git.updateDir(git.getRepo(),bookPath,GO_INSIDE_DIR=False)
+                git.updateDir(git.getRepo(),bookPath,GO_INSIDE_DIR=True)
                 print('downloaded')
             book = None
             if args.test_hard:
