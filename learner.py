@@ -144,57 +144,74 @@ def command(cmd:list):
 
 
     if mode.mode == 'add':
-        ArgParser.add_argument('engine')
-        ArgParser.add_argument('book')
-        ArgParser.add_argument('--dont-update',dest='git',action='store_false')
-        args,unknown = ArgParser.parse_known_args(cmd)
-                
-        bookEngine = OtherBook
-        for engine in engines:
-            if engine == args.engine:
-                bookEngine = engines[engine]
-                print('set to :' + engine)
+        try:
+            ArgParser.add_argument('engine')
+            ArgParser.add_argument('book')
+            ArgParser.add_argument('--dont-update',dest='git',action='store_false')
+            args,unknown = ArgParser.parse_known_args(cmd)
+                    
+            bookEngine = OtherBook
+            for engine in engines:
+                if engine == args.engine:
+                    bookEngine = engines[engine]
+                    print('set to :' + engine)
 
-        book = bookEngine(path.join(BOOK_PATH_ROOT,args.book))
-        adder(book)
+            book = bookEngine(path.join(BOOK_PATH_ROOT,args.book))
+            adder(book)
 
-        if args.git:
-            repo = git.getRepo()
-            git.uploadDir2Github(repo,book.FILE_ROOT)
-            print('uploaded')
+            book.releaseIfNeed()
+
+            if args.git:
+                repo = git.getRepo()
+                git.uploadDir2Github(repo,book.FILE_ROOT)
+                print('uploaded')
+        except:
+            book.releaseIfNeed()
+            if args.git:
+                repo = git.getRepo()
+                git.uploadDir2Github(repo,book.FILE_ROOT)
+                print('uploaded')
     
     if mode.mode == 'test':
-        ArgParser.add_argument('book')
-        ArgParser.add_argument('-n','--note',dest='n')
-        ArgParser.add_argument('-H',dest='test_hard',action="store_true")
-        ArgParser.add_argument('--inv',dest='inv',action="store_true")
-        ArgParser.add_argument('-d','--dont-download',dest='git',action='store_false')
-        args,unknown = ArgParser.parse_known_args(cmd)
+        try:
+            ArgParser.add_argument('book')
+            ArgParser.add_argument('-n','--note',dest='n')
+            ArgParser.add_argument('-H',dest='test_hard',action="store_true")
+            ArgParser.add_argument('--inv',dest='inv',action="store_true")
+            ArgParser.add_argument('-d','--dont-download',dest='git',action='store_false')
+            args,unknown = ArgParser.parse_known_args(cmd)
 
-        bookPath = path.join(BOOK_PATH_ROOT,args.book)
-        if args.git:
-            git.updateDir(git.getRepo(),bookPath,GO_INSIDE_DIR=False)
-            print('downloaded')
-        book = None
-        if args.test_hard:
-            book = Book(path.join(BOOK_PATH_ROOT,args.book,'hards'))
-        else:
-            book = Book(bookPath)
+            bookPath = path.join(BOOK_PATH_ROOT,args.book)
+            if args.git:
+                git.updateDir(git.getRepo(),bookPath,GO_INSIDE_DIR=False)
+                print('downloaded')
+            book = None
+            if args.test_hard:
+                book = Book(path.join(BOOK_PATH_ROOT,args.book,'hards'))
+            else:
+                book = Book(bookPath)
 
-        note = False
-        if args.n:
-            note = Book(path.join(BOOK_PATH_ROOT,args.n))
-        elif not args.test_hard:
-            note = Book(path.join(BOOK_PATH_ROOT,args.book,'hards'))
-            print(path.join(BOOK_PATH_ROOT,args.book,'hards'))
-        
-        if args.inv:
-            tester(book,note,inverse=True)
-        else:
-            tester(book,note)    
-        
-        if args.git:
-            git.uploadDir2Github(git.getRepo(),bookPath)
+            note = False
+            if args.n:
+                note = Book(path.join(BOOK_PATH_ROOT,args.n))
+            elif not args.test_hard:
+                note = Book(path.join(BOOK_PATH_ROOT,args.book,'hards'))
+                print(path.join(BOOK_PATH_ROOT,args.book,'hards'))
+            
+            if args.inv:
+                tester(book,note,inverse=True)
+            else:
+                tester(book,note)    
+            
+            if args.git:
+                git.uploadDir2Github(git.getRepo(),bookPath)
+        except:
+            book.releaseIfNeed()
+            if note:
+                note.releaseIfNeed()
+            if args.git:
+                git.uploadDir2Github(git.getRepo(),bookPath)
+            
     
 
     if mode.mode == 'merge':
