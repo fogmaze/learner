@@ -168,7 +168,7 @@ def command(cmd:list):
         ArgParser.add_argument('-n','--note',dest='n')
         ArgParser.add_argument('-H',dest='test_hard',action="store_true")
         ArgParser.add_argument('--inv',dest='inv',action="store_true")
-        ArgParser.add_argument('--dont-download',dest='git',action='store_false')
+        ArgParser.add_argument('-d','--dont-download',dest='git',action='store_false')
         args,unknown = ArgParser.parse_known_args(cmd)
 
         bookPath = path.join(BOOK_PATH_ROOT,args.book)
@@ -254,4 +254,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    

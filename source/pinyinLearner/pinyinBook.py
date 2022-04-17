@@ -30,10 +30,7 @@ class PinyinBook(Book):
             testingRanges = findRanges([True if d == '1' else False for d in inp[1]])
         ans = PinyinBook.getAnsFromInternet(que)
 
-        if ans[0] == 'none1':
-            return que + 'not found',ans[0]
-
-        if ans[0] == 'none0':
+        if ans[0] == 'none0' or ans[0] == 'none1':
             ans = []
             for c in que:
                 ans_char = PinyinBook.getAnsFromInternet(c)[0]
