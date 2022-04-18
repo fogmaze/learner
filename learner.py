@@ -1,3 +1,4 @@
+#!./ubuntu/bin/python
 import base64
 import os
 from typing import List
@@ -59,7 +60,7 @@ def tester(book:Book,note:Book,inverse = False):
             if inp == 'e':
                 print('enter new definition')
                 inp = input()
-                book.items[index][1] = inp
+                book.items[index][1] = inp if inp != '' else ' '
                 print('changed')
                 print('enter command ( else->quiz, q->quit)')
                 inp = input()
