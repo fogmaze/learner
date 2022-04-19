@@ -42,8 +42,7 @@ def splitBlank(str:str)->list:
 
 def tester(book:Book,note:Book,inverse = False):
     try:
-        print('enter command ( else->quiz, q->quit)')
-        inp = input()
+        inp = input('enter command ( else->quiz, q->quit)')
         while True:
             if inp == 'q':
                 break
@@ -55,31 +54,27 @@ def tester(book:Book,note:Book,inverse = False):
             print(test_que)
             input()
             print(test_ans)
-            print('enter command ( else->quiz, q->quit, a-> add to note, d -> delete this[%s], e -> edit definition) (%d unfamiliar left)' %(book.items[index][0],book.getUnfamiliarLength()))
-            inp = input()
+            inp = input('enter command ( else->quiz, q->quit, a-> add to note, d -> delete this[%s], e -> edit definition) (%d unfamiliar left)' %(book.items[index][0],book.getUnfamiliarLength()))
             if inp == 'e':
                 print('enter new definition')
                 inp = input()
                 book.items[index][1] = inp if inp != '' else ' '
                 print('changed')
-                print('enter command ( else->quiz, q->quit)')
-                inp = input()
+                inp = input('enter command ( else->quiz, q->quit)')
             if inp == 'a':
                 if note:
                     if note.add(test_que,ans=test_ans):
                         print('added')
                     else:
                         print('already added')
-                    print('enter command ( else->quiz, q->quit)')
                 else:
                     print('notebook not loaded')
-                inp = input()
+                inp = input('enter command ( else->quiz, q->quit)')
             elif inp == 'd':
                 book.delWord(index)
                 #mkAnsFile.deleteWord(index,file_root=book)
                 print('deleted')
-                print('enter command ( else->quiz, q->quit)')
-                inp = input()
+                inp = input('enter command ( else->quiz, q->quit)')
     finally:
         if note:
             note.releaseIfNeed()
