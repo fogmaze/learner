@@ -146,11 +146,16 @@ def command(cmd:list):
 
     if mode.mode == 'add':
         try:
+
             ArgParser.add_argument('engine')
             ArgParser.add_argument('book')
             ArgParser.add_argument('--dont-update',dest='git',action='store_false')
             args,unknown = ArgParser.parse_known_args(cmd)
                     
+            if args.git:
+                git.updateDir(git.getRepo(),path.join(BOOK_PATH_ROOT,args.book))
+                print('downloaded')
+
             bookEngine = OtherBook
             for engine in engines:
                 if engine == args.engine:
@@ -160,13 +165,7 @@ def command(cmd:list):
             book = bookEngine(path.join(BOOK_PATH_ROOT,args.book))
             adder(book)
 
-            book.releaseIfNeed()
-
-            if args.git:
-                repo = git.getRepo()
-                git.uploadDir2Github(repo,book.FILE_ROOT)
-                print('uploaded')
-        except:
+        finally:
             book.releaseIfNeed()
             if args.git:
                 repo = git.getRepo()

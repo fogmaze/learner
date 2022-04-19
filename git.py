@@ -76,6 +76,7 @@ def getAllFileInDirGithub(repo:Repository,dirName:str)->List[ContentFile]:
             if not content.name in config['ignore_dir']:
                 [cnts.append(c) for c in repo.get_contents(content.path)]
         else:
+            print('find file {} on github'.format(content.name))
             ret.append(content)
     return ret
 
@@ -99,6 +100,7 @@ def uploadDir2Github(repo:Repository,dirName):
 def uploadFile2Github(repo:Repository,filename:str,path_repo:str):
     path_repo = path_repo.replace('\\','/')
     old_content = False
+    print('uploading:' + filename)
     try:
         old_content = repo.get_contents(path_repo)
     except:
@@ -138,6 +140,7 @@ def updateDir(repo:Repository,path_repo:str,GO_INSIDE_DIR = True):
         saveContent(content)
 
 def updateFile(repo,filename_repo,dst_base_dir = './'):
+    print('downloading:' + filename_repo)
     dst_base_dir = format_dir(dst_base_dir)
     content = repo.get_contents(filename_repo)
     saveContent(content,dst_base_dir)
