@@ -37,3 +37,22 @@ get away
 count on
 what's morw
 leave s.t. __ s.o.
+adv/storage/emulated/0 $ cd learner-master/
+find file ans.txt on github
+find file weighted.txt on github
+find file que.txt on github
+downloaded
+q
+uploading:./books/eng/que.txt
+uploading:./books/eng/hards/ans.txt
+uploading:./books/eng/hards/weighted.txt
+/storage/emulated/0/learner-master $ python learner.py add other engadv
+no file name :./books/engadv/
+y
+early
+new file in github:./books/engadv/que.txt
+new file in github:./books/engadv/ans.txt
+new file in github:./books/engadv/weighted.txt
+/storage/emulated/0/learner-master $ python learner.py add other eng
+set to :other
+Q
