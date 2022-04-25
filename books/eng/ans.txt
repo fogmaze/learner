@@ -37,22 +37,3 @@ taller than
 依靠
 而且
 for
-/storage/emulated/0/learner-master $ python learner.py add other eng
-find file que.txt on github
-find file ans.txt on github
-find file weighted.txt on github
-set to :other
-uploading:./books/eng/ans.txt
-uploading:./books/eng/weighted.txt
-uploading:./books/eng/hards/que.txt
-uploaded
-it's new
-press "y" to create, or other to quit
-enter a word or "q" for quit,"-e <engine>" to change engine
-edter the answer of the quetion
-uploading:./books/engadv/ans.txt
-uploading:./books/engadv/weighted.txt
-uploaded
-find file ans.txt on github
-enter a word or "q" for quit,"-e <engine>" to change engine
-q
