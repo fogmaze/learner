@@ -46,3 +46,5 @@ quiet
 taller
 桃子
 d
+梨子
+ㄓㄨㄟㄍ
