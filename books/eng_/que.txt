@@ -1,0 +1,8 @@
+cost
+cut
+put
+set
+dig
+draw
+ring
+show
