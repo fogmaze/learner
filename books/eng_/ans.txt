@@ -1,0 +1,8 @@
+cost cost cost
+cut cut cut
+put put put
+set set set
+dig dug dug
+draw drew drawn
+ring rang rung
+show showed shown
