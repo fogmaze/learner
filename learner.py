@@ -256,13 +256,16 @@ def command(cmd:list):
                 git.uploadFile2Github(repo,fileName,fileName)
 
 def main():
-    argv = list(sys.argv)
-    del argv[0]
-    if len(argv) < 2:
+    while True:
+        argv = list(sys.argv)
+        del argv[0]
         print('enter command:')
         argv = splitBlank(input())
+        if len(argv) == 0:
+            print('exit')
+            return
 
-    command(argv)
+        command(argv)
 
 if __name__ == '__main__':
     main()

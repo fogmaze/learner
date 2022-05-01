@@ -193,9 +193,9 @@ class Book:
                     self.weighted.append(float(fl_weighted.readline()))
                 else:
                     self.weighted.append(1.0)
-        except:
-            print('error')
-            print('cannot open book')
+        except Exception as e:
+            print('cannot open book by getting error:')
+            print(str(e))
             self = None
             return
         finally:

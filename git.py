@@ -169,7 +169,7 @@ def command(argv):
             if path.isdir(item):
                 uploadDir2Github(repo,item)
             elif path.isfile(item):
-                uploadFile2Github(repo,path.join(config['base_dir'],item),item)
+                uploadFile2Github(repo,path.join('./',item),item)
             else:
                 print('not a file or dir:' + item)
 
