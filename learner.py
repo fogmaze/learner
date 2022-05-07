@@ -7,12 +7,13 @@ from source.idomLearner.IdiomBook import IdiomBook
 from source.otherLearner.otherBook import OtherBook
 from source.pinyinLearner.pinyinBook import PinyinBook
 from source.writingLearner.WritingBook import WritingBook
-import source.pinyinLearner.pinyinBook as p
 import git
 import sys
 from os import path
 from argparse import ArgumentParser
 from source.core import BOOK_BASE as BOOK_PATH_ROOT
+
+GIT = False
 
 engines = {
     'pin':PinyinBook,
@@ -147,7 +148,7 @@ def command(cmd:list):
             ArgParser.add_argument('--dont-update',dest='git',action='store_false')
             args,unknown = ArgParser.parse_known_args(cmd)
                     
-            if args.git:
+            if args.git and GIT:
                 git.updateDir(git.getRepo(),path.join(BOOK_PATH_ROOT,args.book))
                 print('downloaded')
 
@@ -162,7 +163,7 @@ def command(cmd:list):
 
         finally:
             book.releaseIfNeed()
-            if args.git:
+            if args.git and GIT:
                 repo = git.getRepo()
                 git.uploadDir2Github(repo,book.FILE_ROOT)
                 print('uploaded')
@@ -178,7 +179,7 @@ def command(cmd:list):
             args,unknown = ArgParser.parse_known_args(cmd)
 
             bookPath = path.join(BOOK_PATH_ROOT,args.book)
-            if args.git:
+            if args.git and GIT:
                 git.updateDir(git.getRepo(),bookPath,GO_INSIDE_DIR=True)
                 print('downloaded')
             book = None
@@ -202,14 +203,14 @@ def command(cmd:list):
                 print('<1>' + str(book.saveWeightFile))
                 tester(book,note)
             
-            if args.git:
+            if args.git and GIT:
                 git.uploadDir2Github(git.getRepo(),bookPath)
         except Exception as e:
             print('err:' + str(e))
             book.releaseIfNeed()
             if note:
                 note.releaseIfNeed()
-            if args.git:
+            if args.git and GIT:
                 git.uploadDir2Github(git.getRepo(),bookPath)
             
     
