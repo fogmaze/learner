@@ -194,7 +194,7 @@ class Book:
                 else:
                     self.weighted.append(1.0)
         except Exception as e:
-            print('cannot open book by getting error:')
+            print('cannot open book {} by getting error:'.format(self.FILE_ROOT))
             print(str(e))
             self = None
             return
