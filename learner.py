@@ -14,8 +14,6 @@ from os import path
 from argparse import ArgumentParser
 from source.core import BOOK_BASE as BOOK_PATH_ROOT
 
-GIT = False
-
 engines = {
     'pin':PinyinBook,
     'pinyin':PinyinBook,
@@ -149,7 +147,7 @@ def command(cmd:list):
             ArgParser.add_argument('--dont-update',dest='git',action='store_false')
             args,unknown = ArgParser.parse_known_args(cmd)
                     
-            if args.git and GIT:
+            if args.git:
                 git.updateDir(git.getRepo(),path.join(BOOK_PATH_ROOT,args.book))
                 print('downloaded')
 
@@ -164,7 +162,7 @@ def command(cmd:list):
 
         finally:
             book.releaseIfNeed()
-            if args.git and GIT:
+            if args.git:
                 repo = git.getRepo()
                 git.uploadDir2Github(repo,book.FILE_ROOT)
                 print('uploaded')
@@ -175,19 +173,22 @@ def command(cmd:list):
             ArgParser.add_argument('-n','--note',dest='n')
             ArgParser.add_argument('-H',dest='test_hard',action="store_true")
             ArgParser.add_argument('--inv',dest='inv',action="store_true")
+            ArgParser.add_argument('--reset',dest='reset',action="store_false")
             ArgParser.add_argument('-d','--dont-download',dest='git',action='store_false')
             args,unknown = ArgParser.parse_known_args(cmd)
 
             bookPath = path.join(BOOK_PATH_ROOT,args.book)
-            if args.git and GIT:
+            if args.git:
                 git.updateDir(git.getRepo(),bookPath,GO_INSIDE_DIR=True)
                 print('downloaded')
             book = None
             if args.test_hard:
-                book = Book(path.join(BOOK_PATH_ROOT,args.book,'hards'))
+                book = Book(path.join(BOOK_PATH_ROOT,args.book,'hards'),weighted_file = args.reset)
             else:
-                book = Book(bookPath)
-
+                print(args.reset)
+                book = Book(bookPath,weighted_file = args.reset)
+                
+            book.saveWeightFile = True
             note = False
             if args.n:
                 note = Book(path.join(BOOK_PATH_ROOT,args.n))
@@ -198,11 +199,13 @@ def command(cmd:list):
             if args.inv:
                 tester(book,note,inverse=True)
             else:
-                tester(book,note)    
+                print('<1>' + str(book.saveWeightFile))
+                tester(book,note)
             
-            if args.git and GIT:
+            if args.git:
                 git.uploadDir2Github(git.getRepo(),bookPath)
-        except:
+        except Exception as e:
+            print('err:' + str(e))
             book.releaseIfNeed()
             if note:
                 note.releaseIfNeed()
