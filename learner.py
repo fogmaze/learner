@@ -275,5 +275,4 @@ def main():
         command(argv)
 
 if __name__ == '__main__':
-    print(PinyinBook.askQuestionAndAnswer('問候  01'))
     main()
