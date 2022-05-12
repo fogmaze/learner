@@ -13,7 +13,7 @@ from os import path
 from argparse import ArgumentParser
 from source.core import BOOK_BASE as BOOK_PATH_ROOT
 
-GIT = False
+GIT = False 
 
 engines = {
     'pin':PinyinBook,
