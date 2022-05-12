@@ -1,4 +1,4 @@
-#!./windows/Scripts/python
+#!./ubuntu/bin/python
 import base64
 import os
 from typing import List
@@ -97,6 +97,7 @@ def adder(obj:Book):
             inp = input()
             
         que,ans = NowEngine.askQuestionAndAnswer(inp)
+        print((que,ans))
 
 
         ret = obj.add(delEnter(que),ans = delEnter(ans))
@@ -274,4 +275,5 @@ def main():
         command(argv)
 
 if __name__ == '__main__':
+    print(PinyinBook.askQuestionAndAnswer('問候  01'))
     main()

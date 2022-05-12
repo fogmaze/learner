@@ -1,5 +1,5 @@
 from typing import List,Tuple
-from source.core import Book, MarksString,splitBlank,ListOfListByRange,MarkString,MergeString
+from source.core import Book, MarksString,splitBlank,ListOfListByRange,MergeString
 from source.pinyinLearner.findAns import getPinyin_concised
 
 def findRanges(data:List[bool])->List[range]:
@@ -25,9 +25,10 @@ class PinyinBook(Book):
     def askQuestionAndAnswer(inp: str)->Tuple[str,str]:
         inp = splitBlank(inp)
         que = inp[0]
-        testingRanges = [range(0,len(que))]
-        if len(inp) == 2:
-            testingRanges = findRanges([True if d == '1' else False for d in inp[1]])
+
+        testingRange_str = inp[1] if len(inp) == 2 else input('pls enter testing area:')
+        testingRanges = findRanges([True if d == '1' else False for d in testingRange_str])
+
         ans = PinyinBook.getAnsFromInternet(que)
 
         if ans[0] == 'none0' or ans[0] == 'none1':
@@ -42,7 +43,7 @@ class PinyinBook(Book):
         if lastAns[0] == 'none0':
             print(lastAns)
             print("can't find answer, please enter yourself")
-            lastAns = input()
+            lastAns = [input()]
         return MarksString(que,testingRanges),MergeString(lastAns)
 
 

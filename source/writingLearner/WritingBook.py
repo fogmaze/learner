@@ -12,11 +12,10 @@ class WritingBook(Book):
     def askQuestionAndAnswer(inp: str) -> Tuple[str, str]:
         val = splitBlank(inp)
 
-        if len(val) != 2:
-            return
         que_orig = val[0]
         
-        testingRange = [True if d == '1' else False for d in val[1]]
+        testingRange_str = val[1] if len(val) == 2 else input('pls enter testing area:')
+        testingRange = [True if d == '1' else False for d in testingRange_str]
 
         all_pinyin = PinyinBook.getAnsFromInternet(que_orig)
         if all_pinyin[0] == 'none0' or all_pinyin[0] == 'none1':
