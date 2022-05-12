@@ -1,4 +1,4 @@
-#!./ubuntu/bin/python
+#!./windows/Scripts/python
 import base64
 import os
 from typing import List
