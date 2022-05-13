@@ -1,3 +1,4 @@
+#!.\windows/Scripts/python
 #!./ubuntu/bin/python
 import base64
 import os
@@ -13,7 +14,7 @@ from os import path
 from argparse import ArgumentParser
 from source.core import BOOK_BASE as BOOK_PATH_ROOT
 
-GIT = False 
+GIT = False
 
 engines = {
     'pin':PinyinBook,
@@ -73,7 +74,6 @@ def tester(book:Book,note:Book,inverse = False):
                 inp = input('enter command ( else->quiz, q->quit)')
             elif inp == 'd':
                 book.delWord(index)
-                #mkAnsFile.deleteWord(index,file_root=book)
                 print('deleted')
                 inp = input('enter command ( else->quiz, q->quit)')
     finally:
@@ -95,6 +95,13 @@ def adder(obj:Book):
                 if en == flag:
                     NowEngine = engines[flag]
             inp = input()
+        
+        if splitBlank(inp)[0] in engines:
+            en = splitBlank(inp)[0]
+            inp = inp[len(en)+1:len(inp)]
+            for flag in engines:
+                if en == flag:
+                    NowEngine = engines[flag]
             
         que,ans = NowEngine.askQuestionAndAnswer(inp)
         print((que,ans))
