@@ -96,13 +96,10 @@ class Err(Exception):pass
 
 class Book:
     def delWord(self,index:int):
-        print('before' + str(sumList(self.weighted)))
-        w_less_each = len(self.items)
         extraWeight = 1.0 - self.weighted[index]
         del self.items[index]
         del self.weighted[index]
         self.weighted = [w-(extraWeight/len(self.weighted)) for w in self.weighted]
-        print('after' + str(sumList(self.weighted)))
         
 
 
