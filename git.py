@@ -19,7 +19,8 @@ def init():
         'repo_name',
         'base_dir',
         'ignore_files',
-        'ignore_dir'
+        'ignore_dir',
+        'GIT'
     ]
     with open('gitkey.json','r',encoding='utf-8') as config_f:
         global config
@@ -27,6 +28,8 @@ def init():
     for flag in flags:
         if not flag in config:
             config[flag] = '' 
+            if flag == 'GIT':
+                config[flag] = False
 
 init()
 

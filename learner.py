@@ -1,3 +1,4 @@
+#!.\windows/Scripts/python
 #!./ubuntu/bin/python
 import base64
 import os
@@ -12,8 +13,6 @@ import sys
 from os import path
 from argparse import ArgumentParser
 from source.core import BOOK_BASE as BOOK_PATH_ROOT
-
-GIT = False
 
 engines = {
     'pin':PinyinBook,
@@ -73,7 +72,6 @@ def tester(book:Book,note:Book,inverse = False):
                 inp = input('enter command ( else->quiz, q->quit)')
             elif inp == 'd':
                 book.delWord(index)
-                #mkAnsFile.deleteWord(index,file_root=book)
                 print('deleted')
                 inp = input('enter command ( else->quiz, q->quit)')
     finally:
@@ -95,8 +93,16 @@ def adder(obj:Book):
                 if en == flag:
                     NowEngine = engines[flag]
             inp = input()
+        
+        if splitBlank(inp)[0] in engines:
+            en = splitBlank(inp)[0]
+            inp = inp[len(en)+1:len(inp)]
+            for flag in engines:
+                if en == flag:
+                    NowEngine = engines[flag]
             
         que,ans = NowEngine.askQuestionAndAnswer(inp)
+        print((que,ans))
 
 
         ret = obj.add(delEnter(que),ans = delEnter(ans))
@@ -148,7 +154,7 @@ def command(cmd:list):
             ArgParser.add_argument('--dont-update',dest='git',action='store_false')
             args,unknown = ArgParser.parse_known_args(cmd)
                     
-            if args.git and GIT:
+            if args.git and git.config['GIT']:
                 git.updateDir(git.getRepo(),path.join(BOOK_PATH_ROOT,args.book))
                 print('downloaded')
 
@@ -163,7 +169,7 @@ def command(cmd:list):
 
         finally:
             book.releaseIfNeed()
-            if args.git and GIT:
+            if args.git and git.config['GIT']:
                 repo = git.getRepo()
                 git.uploadDir2Github(repo,book.FILE_ROOT)
                 print('uploaded')
@@ -179,7 +185,7 @@ def command(cmd:list):
             args,unknown = ArgParser.parse_known_args(cmd)
 
             bookPath = path.join(BOOK_PATH_ROOT,args.book)
-            if args.git and GIT:
+            if args.git and git.config['GIT']:
                 git.updateDir(git.getRepo(),bookPath,GO_INSIDE_DIR=True)
                 print('downloaded')
             book = None
@@ -203,14 +209,14 @@ def command(cmd:list):
                 print('<1>' + str(book.saveWeightFile))
                 tester(book,note)
             
-            if args.git and GIT:
+            if args.git and git.config['GIT']:
                 git.uploadDir2Github(git.getRepo(),bookPath)
         except Exception as e:
             print('err:' + str(e))
             book.releaseIfNeed()
             if note:
                 note.releaseIfNeed()
-            if args.git and GIT:
+            if args.git and git.config['GIT']:
                 git.uploadDir2Github(git.getRepo(),bookPath)
             
     
