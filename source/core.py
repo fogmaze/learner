@@ -186,16 +186,21 @@ class Book:
             for que in fl_ques:
                 ans = fl_Anss.readline()
                 self.items.append([delEnter(que),delEnter(ans)])
-
-                if fl_weighted:
-                    self.weighted.append(float(fl_weighted.readline()))
-                else:
-                    self.weighted.append(1.0)
+                try:
+                    if fl_weighted:
+                        self.weighted.append(float(fl_weighted.readline()))
+                    else:
+                        self.weighted.append(1.0)
+                except:
+                    print('weight file error. reopening without weighted file')
+                    fl_weighted = None
+                    self.weighted.clear()
+                    self.weighted = [0.0 for n in fl_ques]
+            
         except Exception as e:
             print('cannot open book {} by getting error:'.format(self.FILE_ROOT))
             print(str(e))
-            self = None
-            return
+            sys.exit()
         finally:
             fl_ques.close()
             fl_Anss.close()
