@@ -186,16 +186,16 @@ class Book:
             for que in fl_ques:
                 ans = fl_Anss.readline()
                 self.items.append([delEnter(que),delEnter(ans)])
-                try:
-                    if fl_weighted:
-                        self.weighted.append(float(fl_weighted.readline()))
-                    else:
-                        self.weighted.append(1.0)
-                except:
-                    print('weight file error. reopening without weighted file')
-                    fl_weighted = None
-                    self.weighted.clear()
-                    self.weighted = [0.0 for n in fl_ques]
+
+            if fl_weighted:
+                self.weighted = [float(w) for w in fl_weighted]
+            else:
+                self.weighted = [1.0 for n in self.items]
+
+            if len(self.weighted) != len(self.items):
+                print('weighted file error. reopening without weighted file')
+                self.weighted = [1.0 for n in self.items]
+                    
             
         except Exception as e:
             print('cannot open book {} by getting error:'.format(self.FILE_ROOT))
@@ -253,6 +253,8 @@ class Book:
         fl_Anss = myopen(os.path.join(self.FILE_ROOT,'ans.txt'),'w',encoding='utf-8')
 
         for each in self.items:
+            if len(each[0]) == 0:
+                continue
             if each[0][len(each[0])-1] != '\n':
                 each[0] += '\n'
             if each[1][len(each[1])-1] != '\n':
