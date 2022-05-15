@@ -1,9 +1,9 @@
-#!.\windows/Scripts/python
 #!./ubuntu/bin/python
 import base64
 import os
 from typing import List
 from source.core import Book, MarksString,completePathFormat,delEnter, mergeBooks
+import source.core as Core
 from source.idomLearner.IdiomBook import IdiomBook
 from source.otherLearner.otherBook import OtherBook
 from source.pinyinLearner.pinyinBook import PinyinBook
@@ -93,6 +93,11 @@ def adder(obj:Book):
                 if en == flag:
                     NowEngine = engines[flag]
             inp = input()
+        if "-t" in inp and ' ' in inp:
+            t = splitBlank(inp)[1]
+            Core.TITLE_EACH_QUESTION = t
+            print('enter a question:')
+            inp = input()
         
         if splitBlank(inp)[0] in engines:
             en = splitBlank(inp)[0]
@@ -102,6 +107,7 @@ def adder(obj:Book):
                     NowEngine = engines[flag]
             
         que,ans = NowEngine.askQuestionAndAnswer(inp)
+        que = Core.TITLE_EACH_QUESTION + que
         print((que,ans))
 
 
@@ -151,7 +157,7 @@ def command(cmd:list):
 
             ArgParser.add_argument('engine')
             ArgParser.add_argument('book')
-            ArgParser.add_argument('--dont-update',dest='git',action='store_false')
+            ArgParser.add_argument('-d','--dont-update',dest='git',action='store_false')
             args,unknown = ArgParser.parse_known_args(cmd)
                     
             if args.git and git.config['GIT']:
@@ -212,7 +218,7 @@ def command(cmd:list):
             if args.git and git.config['GIT']:
                 git.uploadDir2Github(git.getRepo(),bookPath)
         except Exception as e:
-            print('err:' + str(e))
+            print('err:' + str(e.args))
             book.releaseIfNeed()
             if note:
                 note.releaseIfNeed()
@@ -268,6 +274,7 @@ def command(cmd:list):
                 git.uploadFile2Github(repo,fileName,fileName)
 
 def main():
+    Core.init()
     while True:
         argv = list(sys.argv)
         del argv[0]
