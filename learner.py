@@ -95,7 +95,7 @@ def adder(obj:Book):
             inp = input()
         if "-t" in inp and ' ' in inp:
             t = splitBlank(inp)[1]
-            Core.TITLE_EACH_QUESTION = '<' + t + '> '
+            Core.TITLE_EACH_QUESTION = '<' + t + '> ' if t != '' else ''
             print('enter a question:')
             inp = input()
         
