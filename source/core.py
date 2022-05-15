@@ -5,6 +5,7 @@ import os
 import sys
 from typing import Tuple,List
 
+
 TIME_LIMIT_EACH_REQUEST = 0.3
 
 BOOK_BASE = './books/'
@@ -329,7 +330,10 @@ def convertFile(name:str):
         data_dc['data'].append([book_old.items[i][0],book_old.items[i][1],book_old.weighted[i]])
     with myopen(os.path.join(name,'book.json'),'w',encoding='utf-8') as f:
         f.write(json.dumps(data_dc,ensure_ascii=False,indent=4))
-    
+
+def init():
+    global TITLE_EACH_QUESTION
+    TITLE_EACH_QUESTION = ''
     
 
 if __name__ == "__main__":
